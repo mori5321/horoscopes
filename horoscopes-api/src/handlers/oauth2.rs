@@ -1,4 +1,3 @@
-use crate::handlers::respond_with_json;
 use crate::clients::oauth2::gen_google_oauth_client;
 use serde::Deserialize;
 
@@ -30,7 +29,11 @@ pub async fn auth() -> Result<impl warp::Reply, warp::Rejection> {
 
     println!("Browse to: {}", auth_url);
 
-    respond_with_json(Ok("auth"), warp::http::StatusCode::MOVED_PERMANENTLY)
+    // respond_with_json(Ok("auth"), warp::http::StatusCode::MOVED_PERMANENTLY)
+    //     .map(|rep| warp::reply::with_header(rep, "Location", auth_url.to_string()))
+
+    Ok(warp::reply::json(&"auth"))
+        .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::MOVED_PERMANENTLY))
         .map(|rep| warp::reply::with_header(rep, "Location", auth_url.to_string()))
 }
 
@@ -45,5 +48,7 @@ pub async fn callback(q: CallbackQueries) -> Result<impl warp::Reply, warp::Reje
     // In memory KVSだと複数サーバーにできないので、サーバー外のDBへの保存が必須な気がする。
     println!("{}", q.code);
     println!("{}", q.state);
-    respond_with_json(Ok("callback"), warp::http::StatusCode::OK)
+
+    Ok(warp::reply::json(&"callback"))
+        .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::OK))
 }
