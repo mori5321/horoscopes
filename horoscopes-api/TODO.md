@@ -1,0 +1,5 @@
+- [ ] DBとの連携
+  - [ ] diesel
+  - [ ] mysql用意 まとめてDocker化してもいいなぁ...
+  - [ ] repository層 用意(DI & usecase層は別タスクでOK)
+  - [ ] 一旦仮でUsers.List API的なものつくる
