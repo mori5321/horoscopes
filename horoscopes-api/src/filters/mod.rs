@@ -3,6 +3,8 @@ mod oauth2;
 mod todos;
 
 use warp::Filter;
+use std::convert::Infallible;
+use crate::usecases::Usecase;
 
 pub fn filters(
 ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
@@ -12,3 +14,11 @@ pub fn filters(
         .or(oauth2::filters("oauth2".to_string()))
         .or(todos::filters("todos".to_string()))
 }
+
+fn with_usecase<U, Input, Output, Deps>(usecase: U)
+    -> impl Filter<Extract = (U, ), Error = Infallible> + Clone
+    where U: Usecase<Input, Output, Deps> + Clone + Send
+{
+    warp::any().map(move || usecase.clone())
+}
+

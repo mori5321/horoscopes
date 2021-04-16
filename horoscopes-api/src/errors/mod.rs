@@ -21,3 +21,5 @@ impl fmt::Display for AppError {
         write!(f, "{}", self.message)
     }
 }
+
+// Errorsは各レイヤーごとにあるのがよい...?

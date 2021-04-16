@@ -1,5 +1,29 @@
-- [ ] DBとの連携
-  - [ ] diesel
-  - [ ] mysql用意 まとめてDocker化してもいいなぁ...
-  - [ ] repository層 用意(DI & usecase層は別タスクでOK)
-  - [ ] 一旦仮でUsers.List API的なものつくる
+- [x] DBとの連携
+  - [x] diesel
+  - [x] mysql用意 まとめてDocker化してもいいなぁ...
+  - [x] repository層 用意(DI & usecase層は別タスクでOK)
+  - [ ] OnMemoryのRepository用意
+  - [ ] DBに接続したRepository用意
+
+- [ ] Todo系の機能を一通りつくる(永続化層はMockでOK)
+  - [ ] List
+  - [ ] Get
+  - [ ] Create
+  - [ ] Update
+  - [ ] Delete
+
+- [x] DTO周り
+- [ ] エラーハンドリング
+  - [ ] 各階層にエラーをもたせるべき?
+  - [ ] 各階層で発生したエラーを最終的にどのように捌くべき?
+- [ ] ULIDの生成・注入
+- [ ] Validation
+  - [ ] Handler層でのValidation
+  - [ ] Entity層でのValidation
+- [ ] 認証との連携
+- [ ] Test
+  - [ ] 単体テスト
+  - [ ] 結合テスト
+- [ ] ロギング
+- [ ] Docker化
+- [ ] デプロイ
