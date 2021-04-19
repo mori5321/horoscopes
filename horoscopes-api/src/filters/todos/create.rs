@@ -26,6 +26,7 @@ pub fn filter(
 }
 
 async fn handler(body: RequestBody, usecase: CreateTodoUsecase) -> Result<impl warp::Reply, warp::Rejection> {
+    format!("Create");
     format!("Body: {}", body.todo.title);
     
     let new_todo_dto = create_todo_usecase::NewTodoDTO {

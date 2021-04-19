@@ -40,9 +40,15 @@ impl ID {
         id.clone()
     }
 
-    pub fn from_string(string: String) -> ID {
+    pub fn from_str(str: &str) -> ID {
         // TODO: Validation
-        ID(string)
+        Self::new(str.to_string())
+    }
+}
+
+impl PartialEq for Todo {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
     }
 }
 

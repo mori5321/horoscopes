@@ -38,7 +38,43 @@ impl TodoRepository for TodoRepositoryOnMemory {
 
     fn store(&self, todo: Todo) -> Result<(), String> {
         // TODO: 存在チェックしてUpdateと切り替える。
-        TODOS_ON_MEMORY.lock().unwrap().push(todo.clone());
-        Ok(())
+        let mut todos = TODOS_ON_MEMORY.lock().unwrap();
+
+        let opt_idx = todos.clone().into_iter().position(|t| {
+            t == todo
+        });
+
+        match opt_idx {
+            Some(idx) => {
+                println!("Updating...");
+                todos.splice(idx..idx + 1, vec![todo].iter().cloned());
+                Ok(()) 
+            }
+            None => {
+                println!("Creating...");
+                todos.push(todo.clone());
+                Ok(())
+            }
+        }
+    }
+
+    fn remove(&self, id: todo::ID) -> Result<(), String> {
+        let mut todos = TODOS_ON_MEMORY.lock().unwrap();
+
+        let opt_idx = todos.clone().into_iter().position(|t| {
+            t.id == id
+        });
+
+        match opt_idx {
+            Some(idx) => {
+                println!("Deleting");
+                todos.remove(idx);
+                Ok(())
+            },
+            None => {
+                println!("Not Found Error Here");
+                Err("Not Found Error".to_string())
+            }
+        }
     }
 }

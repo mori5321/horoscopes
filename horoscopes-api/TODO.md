@@ -2,15 +2,17 @@
   - [x] diesel
   - [x] mysql用意 まとめてDocker化してもいいなぁ...
   - [x] repository層 用意(DI & usecase層は別タスクでOK)
-  - [ ] OnMemoryのRepository用意
+  - [x] OnMemoryのRepository用意
   - [ ] DBに接続したRepository用意
 
 - [ ] Todo系の機能を一通りつくる(永続化層はMockでOK)
-  - [ ] List
-  - [ ] Get
-  - [ ] Create
-  - [ ] Update
+  - [x] List
+  - [x] Get
+  - [x] Create
+  - [x] Update
   - [ ] Delete
+
+- [ ] Todo系の機能、一通り単体テストと結合テストを書いてみる
 
 - [x] DTO周り
 - [ ] エラーハンドリング

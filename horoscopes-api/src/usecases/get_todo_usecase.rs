@@ -51,7 +51,7 @@ impl Usecase<Input, Output, Deps> for GetTodoUsecase {
     }
 
     fn run(&self, input: Input) -> Output {
-        let id = todo::ID::from_string(input.id);
+        let id = todo::ID::from_str(&input.id);
         let todo = self.deps.todo_repository.find(id);
 
         Output {
