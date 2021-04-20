@@ -8,11 +8,11 @@ use std::sync::Mutex;
 
 pub struct TodoRepositoryOnMemory {}
 
-static TODOS_ON_MEMORY: Lazy<Mutex<Vec<Todo>>> = Lazy::new(|| {
+pub static TODOS_ON_MEMORY: Lazy<Mutex<Vec<Todo>>> = Lazy::new(|| {
     let todos = vec![
-        Todo::new("a".to_string(), "hello".to_string(), false),
-        Todo::new("b".to_string(), "world".to_string(), false),
-        Todo::new("c".to_string(), "Let's Sing!".to_string(), false),
+        Todo::new("ulid-00000001".to_string(), "hello".to_string(), false),
+        Todo::new("ulid-00000002".to_string(), "world".to_string(), false),
+        Todo::new("ulid-00000003".to_string(), "Let's Sing!".to_string(), false),
     ];
     
     Mutex::new(todos)
@@ -46,12 +46,10 @@ impl TodoRepository for TodoRepositoryOnMemory {
 
         match opt_idx {
             Some(idx) => {
-                println!("Updating...");
                 todos.splice(idx..idx + 1, vec![todo].iter().cloned());
                 Ok(()) 
             }
             None => {
-                println!("Creating...");
                 todos.push(todo.clone());
                 Ok(())
             }
@@ -67,12 +65,10 @@ impl TodoRepository for TodoRepositoryOnMemory {
 
         match opt_idx {
             Some(idx) => {
-                println!("Deleting");
                 todos.remove(idx);
                 Ok(())
             },
             None => {
-                println!("Not Found Error Here");
                 Err("Not Found Error".to_string())
             }
         }
