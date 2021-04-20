@@ -4,7 +4,7 @@ use std::sync::Arc;
 use crate::filters::with_usecase;
 use crate::usecases::get_todo_usecase;
 use crate::usecases::get_todo_usecase::GetTodoUsecase;
-use crate::adapters::infrastructure::repositories::todo_repository;
+use crate::adapters::infrastructure::repositories::on_memory::todo_repository;
 use crate::usecases::Usecase;
 
 // GET /todos/:id

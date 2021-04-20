@@ -5,14 +5,13 @@
   - [x] OnMemoryのRepository用意
   - [ ] DBに接続したRepository用意
 
-- [ ] Todo系の機能を一通りつくる(永続化層はMockでOK)
+- [z] Todo系の機能を一通りつくる(永続化層はMockでOK)
   - [x] List
   - [x] Get
   - [x] Create
   - [x] Update
-  - [ ] Delete
+  - [x] Delete
 
-- [ ] Todo系の機能、一通り単体テストと結合テストを書いてみる
 
 - [x] DTO周り
 - [ ] エラーハンドリング
@@ -23,9 +22,13 @@
   - [ ] Handler層でのValidation
   - [ ] Entity層でのValidation
 - [ ] 認証との連携
-- [ ] Test
-  - [ ] 単体テスト
-  - [ ] 結合テスト
+- [x] Test
+  - [x] 単体テスト
+  - [x] 結合テスト
 - [ ] ロギング
 - [ ] Docker化
 - [ ] デプロイ
+
+
+- [ ] cli作成
+  - [ ] filter生成コマンド 

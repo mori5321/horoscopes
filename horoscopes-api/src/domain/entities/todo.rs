@@ -1,6 +1,6 @@
 use std::cmp::Eq;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Todo {
     pub id: ID,
     pub title: Title,
@@ -25,7 +25,7 @@ impl Todo {
     }
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct ID(String);
 
 // ValueObjectの実装参考
@@ -52,7 +52,7 @@ impl PartialEq for Todo {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Title(String);
 
 impl Title {
@@ -66,7 +66,7 @@ impl Title {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct IsDone(bool);
 
 impl IsDone {

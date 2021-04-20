@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 use std::sync::Arc;
 use crate::filters::with_usecase;
 use crate::usecases::list_todos_usecase;
-use crate::adapters::infrastructure::repositories::todo_repository;
+use crate::adapters::infrastructure::repositories::on_memory::todo_repository;
 use crate::usecases::Usecase;
 
 pub fn filter(
@@ -64,6 +64,8 @@ mod tests {
     use warp::reply::Reply;
     use serde_json::json;
     use assert_json_diff::assert_json_eq;
+    use crate::domain::entities::todo;
+    use crate::adapters::infrastructure::repositories::for_test::todo_repository::TodoRepositoryForTest;
 
     // TODO: 結合テストとして 別ディレクトリで書く
     // #[tokio::test]
@@ -81,16 +83,6 @@ mod tests {
     //                     "title": "hello",
     //                     "is_done": false,
     //                 },
-    //                 {
-    //                     "id": "b",
-    //                     "title": "world",
-    //                     "is_done": false,
-    //                 },
-    //                 {
-    //                     "id": "c",
-    //                     "title": "Let's Sing!",
-    //                     "is_done": false,
-    //                 }
     //             ]
     //         });
     // 
@@ -102,9 +94,15 @@ mod tests {
     // }
 
     #[tokio::test]
-    async fn handler_returns_3_todos() {
+    async fn handler_returns_todos_json_response() {
+        let todos = vec![
+            todo::Todo::new("ulid-0001".to_string(), "First Task".to_string(), false),
+            todo::Todo::new("ulid-0002".to_string(), "Second Task".to_string(), false),
+            todo::Todo::new("ulid-0003".to_string(), "Third Task".to_string(), false),
+        ];
+
         let todo_repository = Arc::new(
-            todo_repository::TodoRepositoryOnMemory::new()
+            TodoRepositoryForTest::new(todos)
         );
         let deps = list_todos_usecase::Deps::new(todo_repository);
         let usecase = list_todos_usecase::ListTodosUsecase::new(deps);
@@ -119,29 +117,24 @@ mod tests {
         let json = json!({
                 "data": [
                     {
-                        "id": "ulid-00000001",
-                        "title": "hello",
+                        "id": "ulid-0001",
+                        "title": "First Task",
                         "is_done": false,
                     },
                     {
-                        "id": "ulid-00000002",
-                        "title": "world",
+                        "id": "ulid-0002",
+                        "title": "Second Task",
                         "is_done": false,
                     },
                     {
-                        "id": "ulid-00000003",
-                        "title": "Let's Sing!",
+                        "id": "ulid-0003",
+                        "title": "Third Task",
                         "is_done": false,
                     }
                 ]
             });
         
         assert_eq!(status_code, 200);
-
-        // TODO: diffが見えづらいのでこれつかう
-        // assert_json_diff
-        // https://qiita.com/yagince/items/b60e4e59bbca7f85bcb4#test-2
-        // https://qiita.com/yagince/items/b60e4e59bbca7f85bcb4#test-2
         assert_json_eq!(
             serde_json::from_slice::<serde_json::Value>(&bytes).unwrap(),
             json

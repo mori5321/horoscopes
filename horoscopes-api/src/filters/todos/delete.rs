@@ -1,9 +1,8 @@
 use warp::Filter;
-use serde::{Serialize, Deserialize};
 use std::sync::Arc;
 
 use crate::filters::with_usecase;
-use crate::adapters::infrastructure::repositories::todo_repository::TodoRepositoryOnMemory;
+use crate::adapters::infrastructure::repositories::on_memory::todo_repository;
 use crate::usecases::Usecase;
 use crate::usecases::delete_todo_usecase;
 use crate::usecases::delete_todo_usecase::DeleteTodoUsecase;
@@ -12,7 +11,7 @@ pub fn filter(
 ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
 + Clone {
     let deps = delete_todo_usecase::Deps::new(
-        Arc::new(TodoRepositoryOnMemory::new())
+        Arc::new(todo_repository::TodoRepositoryOnMemory::new())
     );
     let usecase = DeleteTodoUsecase::new(deps);
 

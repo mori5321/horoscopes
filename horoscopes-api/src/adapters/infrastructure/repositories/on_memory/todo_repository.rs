@@ -8,6 +8,7 @@ use std::sync::Mutex;
 
 pub struct TodoRepositoryOnMemory {}
 
+
 pub static TODOS_ON_MEMORY: Lazy<Mutex<Vec<Todo>>> = Lazy::new(|| {
     let todos = vec![
         Todo::new("ulid-00000001".to_string(), "hello".to_string(), false),
@@ -17,6 +18,7 @@ pub static TODOS_ON_MEMORY: Lazy<Mutex<Vec<Todo>>> = Lazy::new(|| {
     
     Mutex::new(todos)
 });
+
 
 
 impl TodoRepositoryOnMemory {
@@ -37,7 +39,6 @@ impl TodoRepository for TodoRepositoryOnMemory {
     }
 
     fn store(&self, todo: Todo) -> Result<(), String> {
-        // TODO: 存在チェックしてUpdateと切り替える。
         let mut todos = TODOS_ON_MEMORY.lock().unwrap();
 
         let opt_idx = todos.clone().into_iter().position(|t| {
