@@ -32,6 +32,29 @@ Therefore, we must satisfy 3 constraints about our error handling.
 - We can convert error to some HTTP Response & Status Code.
 - We can detect where the error occurred. (logging, separate layer)
 
+## Analysis
+We mainly have 4 layers which we have to occur error.
+- Domains
+- Usecases
+- Filters
+- Adapters(ex: repository, external client)
+
+I think it is a good to define errors separately for these 4 layers like,
+- Domain Error
+- Usecase Error
+- Filter Error
+- Adapter Error
+
+Each layer error should only converts into next level layer error.
+```
+Domain Error -> Usecase Error -> Filter Error
+Adapter Error ->
+```
+
+We must be able to detect where the source or cause of an error, 
+even if the error is like 'Filter Error including Usecase Error including Domain Error'.
+
+
 ## Decision
 WIP...
 

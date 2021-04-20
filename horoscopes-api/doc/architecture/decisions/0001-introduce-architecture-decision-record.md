@@ -1,4 +1,4 @@
-# 2. Introduce Architecture Decision Record
+# 1. Introduce Architecture Decision Record
 
 Date: 2021-04-05
 
