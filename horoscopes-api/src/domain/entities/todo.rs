@@ -1,5 +1,6 @@
 use std::cmp::Eq;
 use std::fmt;
+use crate::domain::errors::{DomainError, DomainErrorType};
 
 #[derive(Clone, Debug)]
 pub struct Todo {
@@ -17,7 +18,7 @@ pub struct Todo {
 // 良いかはわからない。
 
 impl Todo {
-    pub fn new(id: String, title: String, is_done: bool) -> Result<Self, ExceedMaxLengthError> {
+    pub fn new(id: String, title: String, is_done: bool) -> Result<Self, DomainError> {
         let res_title = Title::new(title);
         
         if let Err(err) = res_title {
@@ -76,28 +77,6 @@ impl PartialEq for Todo {
     }
 }
 
-#[derive(Debug)]
-pub struct ExceedMaxLengthError {
-    text: String,
-    length: usize,
-    max_length: usize,
-}
-
-// TODO: 統一的なDomain Errorを作成する
-impl fmt::Display for ExceedMaxLengthError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "Domain Error: Exceeded max length. LENGTH: {}. MAX_LENGTH: {}.",
-            self.length,
-            self.max_length
-        )
-    }
-}
-
-impl std::error::Error for ExceedMaxLengthError {
-    // fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {<Up>}
-}
 
 #[derive(Clone, Debug)]
 pub struct Title(String);
@@ -105,13 +84,12 @@ pub struct Title(String);
 const TITLE_MAX_LENGTH: usize = 80;
 
 impl Title {
-    fn new(text: String) -> Result<Self, ExceedMaxLengthError> {
+    fn new(text: String) -> Result<Self, DomainError> {
         if text.len() > TITLE_MAX_LENGTH {
             return Err(
-                ExceedMaxLengthError{
-                    text: text.clone(),
-                    length: text.len(),
-                    max_length: TITLE_MAX_LENGTH,
+                DomainError {
+                    err_type: DomainErrorType::ExceedMaxLengthError,
+                    message: format!("Title must be less than {} letters", TITLE_MAX_LENGTH)
                 }
             )
         }

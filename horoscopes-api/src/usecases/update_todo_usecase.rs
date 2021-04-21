@@ -2,8 +2,8 @@ use crate::domain::repositories::TodoRepository;
 use crate::domain::entities::todo::Todo;
 use crate::domain::entities::todo;
 use crate::usecases::Usecase;
+use crate::usecases::errors::{UsecaseError, UsecaseErrorType, from_domain_error};
 use std::sync::Arc;
-use std::error::Error;
 
 #[derive(Clone)]
 pub struct Deps {
@@ -37,18 +37,23 @@ pub struct UpdateTodoUsecase {
     deps: Deps
 }
 
-impl Usecase<Input, Result<Output, String>, Deps> for UpdateTodoUsecase {
+impl Usecase<Input, Result<Output, UsecaseError>, Deps> for UpdateTodoUsecase {
     fn new(deps: Deps) -> Self {
         Self { deps }
     }
 
-    fn run(&self, input: Input) -> Result<Output, String> {
+    fn run(&self, input: Input) -> Result<Output, UsecaseError> {
         let todo_id = todo::ID::from_str(&input.update_todo_dto.id);
         let todo = self.deps.todo_repository.find(todo_id);
 
         if todo.is_none() {
-            // return Output { success: false }
-            return Err("Not Found Error".to_string())
+            return Err(
+                UsecaseError {
+                    err_type: UsecaseErrorType::BusinessError,
+                    message: "temporary".to_string(),
+                    child: None,
+                }
+            )
         }
         
         let res_updated_todo = Todo::new(
@@ -58,8 +63,7 @@ impl Usecase<Input, Result<Output, String>, Deps> for UpdateTodoUsecase {
         );
 
         if let Err(err) = res_updated_todo {
-            println!("Err: {:?}", err.source());
-            return Err(err.to_string());
+            return Err(from_domain_error(err))
         }
 
         let result = self.deps.todo_repository.store(res_updated_todo.unwrap());
@@ -67,7 +71,13 @@ impl Usecase<Input, Result<Output, String>, Deps> for UpdateTodoUsecase {
             // TODO: we need better error handling.
             Ok(_) => Ok(Output {}),
             Err(err) => {
-                Err(err)        
+                return Err(
+                    UsecaseError {
+                        err_type: UsecaseErrorType::BusinessError,
+                        message: "temporary".to_string(),
+                        child: None,
+                    }
+            )
             }
         }
     }

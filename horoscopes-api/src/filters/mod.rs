@@ -2,6 +2,8 @@ mod accounts;
 mod oauth2;
 mod todos;
 
+mod errors;
+
 use warp::Filter;
 use std::convert::Infallible;
 use crate::usecases::Usecase;

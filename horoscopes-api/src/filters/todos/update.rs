@@ -1,8 +1,10 @@
 use warp::Filter;
 use serde::{Serialize, Deserialize};
 use std::sync::Arc;
+use std::error::Error;
 
 use crate::filters::with_usecase;
+use crate::filters::errors::from_usecase_error;
 use crate::adapters::infrastructure::repositories::on_memory::todo_repository;
 use crate::usecases::Usecase;
 use crate::usecases::update_todo_usecase;
@@ -42,9 +44,11 @@ async fn handler(
             Ok(warp::reply::json(&"Success"))
                 .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::NO_CONTENT))
         },
-        Err(msg) => {
-            Ok(warp::reply::json(&msg))
-                .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::BAD_REQUEST))
+        Err(err) => {
+            let app_error = from_usecase_error(err);
+            // 「childがなければそこを末尾とする」 というロジックでいける。
+            println!("Source: {:?}", app_error.source());
+            Err(warp::reject::custom(app_error))
         }
     }
 }
