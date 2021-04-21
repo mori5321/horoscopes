@@ -46,14 +46,18 @@ impl Usecase<Input, Output, Deps> for CreateTodoUsecase {
         // この辺のUserFactoryのアイデアもよい
         // https://github.com/nrslib/BottomUpDDDTheLaterPart/tree/master/src
         let id = "xxxxxx".to_string();
-        let todo = Todo::new(
+        let res_todo = Todo::new(
             id,
             input.new_todo_dto.title,
             false
         );
 
+        if let Err(_) = res_todo {
+            return Output { success: false }
+        }
+
         // TODO: We need better error handling.
-        match self.deps.todo_repository.store(todo) {
+        match self.deps.todo_repository.store(res_todo.unwrap()) {
             Ok(_) => {
                 Output {
                     success: true

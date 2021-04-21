@@ -11,9 +11,9 @@ pub struct TodoRepositoryOnMemory {}
 
 pub static TODOS_ON_MEMORY: Lazy<Mutex<Vec<Todo>>> = Lazy::new(|| {
     let todos = vec![
-        Todo::new("ulid-00000001".to_string(), "hello".to_string(), false),
-        Todo::new("ulid-00000002".to_string(), "world".to_string(), false),
-        Todo::new("ulid-00000003".to_string(), "Let's Sing!".to_string(), false),
+        Todo::new("ulid-00000001".to_string(), "hello".to_string(), false).unwrap(),
+        Todo::new("ulid-00000002".to_string(), "world".to_string(), false).unwrap(),
+        Todo::new("ulid-00000003".to_string(), "Let's Sing!".to_string(), false).unwrap(),
     ];
     
     Mutex::new(todos)
@@ -35,7 +35,7 @@ impl TodoRepository for TodoRepositoryOnMemory {
 
     fn find(&self, id: todo::ID) -> Option<Todo> {
         let todos = TODOS_ON_MEMORY.lock().unwrap().clone();
-        todos.into_iter().find(|todo| todo.id == id)
+        todos.into_iter().find(|todo| todo.id() == id)
     }
 
     fn store(&self, todo: Todo) -> Result<(), String> {
@@ -61,7 +61,7 @@ impl TodoRepository for TodoRepositoryOnMemory {
         let mut todos = TODOS_ON_MEMORY.lock().unwrap();
 
         let opt_idx = todos.clone().into_iter().position(|t| {
-            t.id == id
+            t.id() == id
         });
 
         match opt_idx {

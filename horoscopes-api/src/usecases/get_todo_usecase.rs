@@ -34,9 +34,9 @@ pub struct TodoDTO {
 
 fn from_entity(todo: Todo) -> TodoDTO {
     TodoDTO {
-        id: todo.id.to_string(),
-        title: todo.title.to_string(),
-        is_done: todo.is_done.to_bool(),
+        id: todo.id().value(),
+        title: todo.title().value(),
+        is_done: todo.is_done().value(),
     }    
 } 
 

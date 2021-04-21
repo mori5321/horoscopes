@@ -29,22 +29,21 @@ async fn handler(
     body: RequestBody,
     usecase: UpdateTodoUsecase
 ) -> Result<impl warp::Reply, warp::Rejection> {
-    format!("Update");
     let update_todo_dto = update_todo_usecase::UpdateTodoDTO {
         id,
         title: body.todo.title,
         is_done: body.todo.is_done
     };
     let input = update_todo_usecase::Input { update_todo_dto };
-    let output = usecase.run(input);
+    let result = usecase.run(input);
 
-    match output.success {
-        true => {
+    match result {
+        Ok(_output) => {
             Ok(warp::reply::json(&"Success"))
                 .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::NO_CONTENT))
         },
-        false => {
-            Ok(warp::reply::json(&"Failed"))            
+        Err(msg) => {
+            Ok(warp::reply::json(&msg))
                 .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::BAD_REQUEST))
         }
     }

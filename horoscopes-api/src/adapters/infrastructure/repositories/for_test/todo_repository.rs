@@ -33,7 +33,7 @@ impl TodoRepository for TodoRepositoryForTest {
 
     fn find(&self, id: todo::ID) -> Option<Todo> {
         let todos = self.todos.lock().unwrap().clone();
-        todos.into_iter().find(|todo| todo.id == id)
+        todos.into_iter().find(|todo| todo.id() == id)
     }
 
     fn store(&self, todo: Todo) -> Result<(), String> {
@@ -59,7 +59,7 @@ impl TodoRepository for TodoRepositoryForTest {
         let mut todos = self.todos.lock().unwrap();
 
         let opt_idx = todos.clone().into_iter().position(|t| {
-            t.id == id
+            t.id() == id
         });
 
         match opt_idx {

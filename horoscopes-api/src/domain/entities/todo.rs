@@ -1,10 +1,11 @@
 use std::cmp::Eq;
+use std::fmt;
 
 #[derive(Clone, Debug)]
 pub struct Todo {
-    pub id: ID,
-    pub title: Title,
-    pub is_done: IsDone,
+    id: ID,
+    title: Title,
+    is_done: IsDone,
 }
 
 // 全体的にValueObjectの知識がEntityの外に出ていくのはよくないかもしれない...?
@@ -16,12 +17,32 @@ pub struct Todo {
 // 良いかはわからない。
 
 impl Todo {
-    pub fn new(id: String, title: String, is_done: bool) -> Self {
-        Self {
-            id: ID::new(id),
-            title: Title::new(title),
-            is_done: IsDone::new(is_done),
+    pub fn new(id: String, title: String, is_done: bool) -> Result<Self, ExceedMaxLengthError> {
+        let res_title = Title::new(title);
+        
+        if let Err(err) = res_title {
+            return Err(err)
         }
+
+        let todo = Self {
+            id: ID::new(id),
+            title: res_title.unwrap(),
+            is_done: IsDone::new(is_done),
+        };
+
+        return Ok(todo)
+    }
+
+    pub fn id(&self) -> ID {
+        self.id.clone()
+    }
+
+    pub fn title(&self) -> Title {
+        self.title.clone()
+    }
+
+    pub fn is_done(&self) -> IsDone {
+        self.is_done.clone()
     }
 }
 
@@ -35,14 +56,17 @@ impl ID {
         ID(id)
     }
 
-    pub fn to_string(&self) -> String {
-        let ID(id) = self;
-        id.clone()
+    pub fn value(&self) -> String {
+        self.to_string()
+    }
+    
+    pub fn from_str(str: &str) -> ID {
+        Self::new(str.to_string())
     }
 
-    pub fn from_str(str: &str) -> ID {
-        // TODO: Validation
-        Self::new(str.to_string())
+    fn to_string(&self) -> String {
+        let ID(id) = self;
+        id.clone()
     }
 }
 
@@ -52,15 +76,54 @@ impl PartialEq for Todo {
     }
 }
 
+#[derive(Debug)]
+pub struct ExceedMaxLengthError {
+    text: String,
+    length: usize,
+    max_length: usize,
+}
+
+// TODO: 統一的なDomain Errorを作成する
+impl fmt::Display for ExceedMaxLengthError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "Domain Error: Exceeded max length. LENGTH: {}. MAX_LENGTH: {}.",
+            self.length,
+            self.max_length
+        )
+    }
+}
+
+impl std::error::Error for ExceedMaxLengthError {
+    // fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {<Up>}
+}
+
 #[derive(Clone, Debug)]
 pub struct Title(String);
 
+const TITLE_MAX_LENGTH: usize = 80;
+
 impl Title {
-    fn new(text: String) -> Self {
-        Title(text)
+    fn new(text: String) -> Result<Self, ExceedMaxLengthError> {
+        if text.len() > TITLE_MAX_LENGTH {
+            return Err(
+                ExceedMaxLengthError{
+                    text: text.clone(),
+                    length: text.len(),
+                    max_length: TITLE_MAX_LENGTH,
+                }
+            )
+        }
+
+        Ok(Title(text))
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn value(&self) -> String {
+        self.to_string()
+    }
+    
+    fn to_string(&self) -> String {
         let Title(text) = self;
         text.clone()
     }
@@ -74,7 +137,7 @@ impl IsDone {
         IsDone(is_done)
     }
 
-    pub fn to_bool(&self) -> bool {
+    pub fn value(&self) -> bool {
         let IsDone(is_done) = self;
         is_done.clone()
     }

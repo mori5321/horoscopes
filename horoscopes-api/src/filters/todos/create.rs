@@ -67,24 +67,19 @@ mod tests {
     use warp::reply::Reply;
     use crate::adapters::infrastructure::repositories::for_test::todo_repository::TodoRepositoryForTest;
 
-
-    // NOTE: このレイヤーの単体テスト意味あるか...?
-    // やるならUsecaseレイヤーでよくね...?
-    //
-    // テスト優先度
-    // Filter結合テスト > Entity単体テスト = Repositoryクエリテスト >>> Usecase単体テスト, Handler単体テスト
-    // クエリテストはdieselのdebug_queryで書けそう
-    // https://docs.diesel.rs/diesel/fn.debug_query.html
-    //
-    // Handlerをテストするメリット=ステータスコードの出し分け、DTOの値などユーザーに近い部分がテストできる。
-    // Usecaseをテストするメリット=アプリケーションロジックのテストに集中できる。
-    #[tokio::test]
-    async fn handler_creates_todo() {
+    fn init_usecase() -> (create_todo_usecase::CreateTodoUsecase, Arc<TodoRepositoryForTest>) {
         let todo_repository = Arc::new(
             TodoRepositoryForTest::new(vec![])
         );
         let deps = create_todo_usecase::Deps::new(todo_repository.clone());
         let usecase = create_todo_usecase::CreateTodoUsecase::new(deps);
+
+        return (usecase, todo_repository)
+    }
+
+    #[tokio::test]
+    async fn handler_creates_todo() {
+        let (usecase, todo_repository) = init_usecase();
 
         let new_todo = NewTodo {
             title: "NewTodo".to_string()
@@ -101,11 +96,51 @@ mod tests {
         let todos = todo_repository.todos.lock().unwrap();
         let first_todo = &todos[0];
 
-        assert_eq!(first_todo.title.to_string(), "NewTodo".to_string());
-        assert_eq!(first_todo.is_done.to_bool(), false);
-        assert_eq!(first_todo.id.to_string(), "xxxxxx".to_string());
+        assert_eq!(first_todo.title().value(), "NewTodo".to_string());
+        assert_eq!(first_todo.is_done().value(), false);
+        assert_eq!(first_todo.id().value(), "xxxxxx".to_string());
         
         assert_eq!(status_code, 201);
+    }
+    
+    #[tokio::test]
+    async fn handler_returns_201_when_title_is_less_than_80_letters() {
+        let (usecase, _) = init_usecase();
+
+        let new_todo = NewTodo {
+            title: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string()
+        };
+        assert!(&new_todo.title.len() <= &80);
+        
+        let req_body = RequestBody {
+            todo: new_todo
+        };
+        let rep = handler(req_body, usecase).await.unwrap();
+        let res = rep.into_response();
+
+        let status_code = res.status();
+        
+        assert_eq!(status_code, 201);
+    }
+
+    #[tokio::test]
+    async fn handler_returns_400_when_title_is_over_80_letters() {
+        let (usecase, _) = init_usecase();
+
+        let new_todo = NewTodo {
+            title: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string()
+        };
+        assert!(&new_todo.title.len() > &80);
+        
+        let req_body = RequestBody {
+            todo: new_todo
+        };
+        let rep = handler(req_body, usecase).await.unwrap();
+        let res = rep.into_response();
+
+        let status_code = res.status();
+        
+        assert_eq!(status_code, 400);
     }
 }
 
