@@ -1,7 +1,6 @@
 use warp::Filter;
 use serde::{Serialize, Deserialize};
 use std::sync::Arc;
-use std::error::Error;
 
 use crate::filters::with_usecase;
 use crate::filters::errors::from_usecase_error;
@@ -46,7 +45,8 @@ async fn handler(
         },
         Err(err) => {
             let app_error = from_usecase_error(err);
-            println!("Source: {:?}", app_error.source());
+            // Err(app_error)
+            // println!("Source: {:?}", app_error.source());
             Err(warp::reject::custom(app_error))
         }
     }

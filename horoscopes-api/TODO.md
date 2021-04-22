@@ -37,5 +37,10 @@
 # Want
 - [ ] cli作成
   - [ ] filter生成コマンド 
-- [ ] warpの組み込みのエラーをJSONに変換してResponseにしたい。
-  - [ ] Method Not Allowd とか Invalid Field的なやつ
+
+- [ ] Error系
+  - [ ] warpの組み込みのエラーをJSONに変換してResponseにしたい。
+    - [ ] Method Not Allowd とか Invalid Field的なやつ
+  - [ ] SystemError系はログを残したい
+  - [ ] ログを取る際にエラーのバックトレースを残したい。(大本はどこのエラーなのか)
+

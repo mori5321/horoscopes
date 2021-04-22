@@ -38,11 +38,15 @@ pub fn from_usecase_error(err: UsecaseError) -> AppError {
                 },
             }
         },
-        _ => {
-            AppError { 
-                child: err.clone(),
-                err_type: AppErrorType::Internal,
-                message: err.message.clone(),
+        UsecaseErrorType::SystemError(ref system_error) => {
+            match system_error {
+                SystemError::UnknownError => {
+                    AppError { 
+                        child: err.clone(),
+                        err_type: AppErrorType::Internal,
+                        message: err.message.clone(),
+                    }
+                }
             }
         }
     }

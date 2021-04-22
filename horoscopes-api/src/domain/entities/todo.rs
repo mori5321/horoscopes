@@ -1,5 +1,4 @@
 use std::cmp::Eq;
-use std::fmt;
 use crate::domain::errors::{DomainError, DomainErrorType};
 
 #[derive(Clone, Debug)]

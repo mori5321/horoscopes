@@ -4,15 +4,13 @@ mod todos;
 
 mod errors;
 
-use std::error::Error;
 use std::convert::Infallible;
 use warp::Filter;
 use warp::http::StatusCode;
 use serde::{Serialize, Serializer};
 use serde::ser::SerializeStruct;
 use crate::usecases::Usecase;
-use crate::filters::errors::{AppError, AppErrorType};
-// use warp::reject::Rejection;
+use crate::filters::errors::AppErrorType;
 
 pub fn filters(
 ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
@@ -60,7 +58,7 @@ async fn handle_rejection(err: warp::Rejection) -> Result<impl warp::Reply, warp
             },
             AppErrorType::UnprocessableEntity => {
                 ErrorResponse {
-                    code: StatusCode::INTERNAL_SERVER_ERROR,
+                    code: StatusCode::UNPROCESSABLE_ENTITY,
                     message: e.message.clone(),
                 }
             },
@@ -75,7 +73,7 @@ async fn handle_rejection(err: warp::Rejection) -> Result<impl warp::Reply, warp
         let json = warp::reply::json(&resp);
         return Ok(warp::reply::with_status(json, resp.code))
     } else {
-        // TODO: ResponseをJSONに変換したい。
+        // TODO: warp組み込みのエラーのResponseをJSONに変換したい。
         return Err(err)
     }
 }
