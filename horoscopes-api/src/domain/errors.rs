@@ -11,6 +11,7 @@ pub struct DomainError {
 #[derive(Debug, Clone)]
 pub enum DomainErrorType {
     ExceedMaxLengthError,
+    // LessThanMinLengthError,
 }
 
 impl Error for DomainError {}

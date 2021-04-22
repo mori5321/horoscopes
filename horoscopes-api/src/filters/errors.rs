@@ -28,6 +28,16 @@ pub fn from_usecase_error(err: UsecaseError) -> AppError {
 
 
 impl Reject for AppError {}
+// impl Reject for AppError {
+//     fn from(err)
+// }
+// 
+// impl From<AppError> for warp::Rejection {
+//     fn from(err: AppError) -> Self {
+//         warp::reject::custom(err)
+//     }
+// }
+
 
 impl Error for AppError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
