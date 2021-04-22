@@ -3,9 +3,9 @@ use warp::reject::Reject;
 
 #[derive(Debug)]
 pub enum ErrorType {
+    BadRequest,
     NotFound,
     Internal,
-    BadRequest,
 }
 
 #[derive(Debug)]

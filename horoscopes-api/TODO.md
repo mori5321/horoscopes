@@ -1,3 +1,4 @@
+# Must
 - [x] DBとの連携
   - [x] diesel
   - [x] mysql用意 まとめてDocker化してもいいなぁ...
@@ -12,16 +13,17 @@
   - [x] Update
   - [x] Delete
 
-
 - [x] DTO周り
-- [ ] エラーハンドリング
+- [x] エラーハンドリング
   - [x] 試実装してみる。
-  - [ ] 各階層にエラーをもたせる
-  - [ ] 各階層で発生したエラーを最終的にどのように捌くべき?
+  - [x]各階層にエラーをもたせる
+  - [x] 各階層で発生したエラーを最終的にどのように捌くべき?
 - [ ] ULIDの生成・注入
 - [ ] Validation
   - [ ] Handler層でのValidation
-  - [ ] Entity層でのValidation
+    - [ ] Stringの文字数
+    - [ ] 数値の不許可範囲(<- ほぼDomainErrorでは...?)
+  - [x] Entity層でのValidation
 - [ ] 認証との連携
 - [x] Test
   - [x] 単体テスト
@@ -32,5 +34,8 @@
 - [ ] SqlXをdieselと比較検討する。
 
 
+# Want
 - [ ] cli作成
   - [ ] filter生成コマンド 
+- [ ] warpの組み込みのエラーをJSONに変換してResponseにしたい。
+  - [ ] Method Not Allowd とか Invalid Field的なやつ

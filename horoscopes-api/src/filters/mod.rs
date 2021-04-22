@@ -4,11 +4,14 @@ mod todos;
 
 mod errors;
 
-use warp::Filter;
-use std::convert::Infallible;
-use crate::usecases::Usecase;
-use warp::http::StatusCode;
 use std::error::Error;
+use std::convert::Infallible;
+use warp::Filter;
+use warp::http::StatusCode;
+use serde::{Serialize, Serializer};
+use serde::ser::SerializeStruct;
+use crate::usecases::Usecase;
+use crate::filters::errors::{AppError, AppErrorType};
 // use warp::reject::Rejection;
 
 pub fn filters(
@@ -18,18 +21,64 @@ pub fn filters(
         .and(accounts::filters("accounts".to_string()))
         .or(oauth2::filters("oauth2".to_string()))
         .or(todos::filters("todos".to_string()))
-        .recover(|err: warp::Rejection| async move {
-            // println!("Handling: {:?}", err);
-            if let Some(e) = err.find::<crate::filters::errors::AppError>() {
-                // let er = e.source().unwrap().source();
-                println!("Found {:?}", e.source().unwrap().source());
-                // println!("Found {:?}", e.source());
-            }
-    
-            Ok(warp::reply::with_status("Fail", StatusCode::BAD_REQUEST))
-        })
+        .recover(handle_rejection)
 }
 
+struct ErrorResponse {
+    code: StatusCode,
+    message: String
+}
+
+impl Serialize for ErrorResponse {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut s = serializer.serialize_struct("ErrorResponse", 2)?;
+        s.serialize_field("code", &self.code.as_u16())?;
+        s.serialize_field("message", &self.message)?;
+        s.end()
+    }
+}
+
+async fn handle_rejection(err: warp::Rejection) -> Result<impl warp::Reply, warp::Rejection> {
+    let resp: ErrorResponse;
+
+    if let Some(e) = err.find::<crate::filters::errors::AppError>() {
+        resp = match e.err_type {
+            AppErrorType::NotFound => {
+                ErrorResponse {
+                    code: StatusCode::NOT_FOUND,
+                    message: e.message.clone(),
+                }
+            },
+            AppErrorType::Internal => {
+                ErrorResponse {
+                    code: StatusCode::INTERNAL_SERVER_ERROR,
+                    message: e.message.clone(),
+                }
+            },
+            AppErrorType::UnprocessableEntity => {
+                ErrorResponse {
+                    code: StatusCode::INTERNAL_SERVER_ERROR,
+                    message: e.message.clone(),
+                }
+            },
+            AppErrorType::BadRequest => {
+                ErrorResponse {
+                    code: StatusCode::BAD_REQUEST,
+                    message: e.message.clone(),
+                }
+            }
+        };
+
+        let json = warp::reply::json(&resp);
+        return Ok(warp::reply::with_status(json, resp.code))
+    } else {
+        // TODO: ResponseをJSONに変換したい。
+        return Err(err)
+    }
+}
 
 fn with_usecase<U, Input, Output, Deps>(usecase: U)
     -> impl Filter<Extract = (U, ), Error = Infallible> + Clone

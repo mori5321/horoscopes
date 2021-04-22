@@ -4,7 +4,7 @@ use crate::domain::errors::{DomainError, DomainErrorType};
 use std::sync::Arc;
 use std::fmt::Debug;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct UsecaseError {
     pub child: Option<Arc<dyn Error + Sync + Send>>,
     pub message: String,
@@ -16,8 +16,8 @@ pub fn from_domain_error(err: DomainError) -> UsecaseError {
         DomainErrorType::ExceedMaxLengthError => {
             UsecaseError {
                 child: Some(Arc::new(err.clone())),
-                message: "".to_string(),
-                err_type: UsecaseErrorType::BusinessError
+                message: err.message.to_string(),
+                err_type: UsecaseErrorType::BusinessError(BusinessError::ValidationError)
             }
         }
         // _ => {
@@ -30,10 +30,21 @@ pub fn from_domain_error(err: DomainError) -> UsecaseError {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum UsecaseErrorType {
-    BusinessError,
-    SystemError,
+    BusinessError(BusinessError),
+    SystemError(SystemError),
+}
+
+#[derive(Debug, Clone)]
+pub enum BusinessError {
+    ValidationError,
+    NotFoundError
+}
+
+#[derive(Debug, Clone)]
+pub enum SystemError {
+   UnknownError 
 }
 
 impl Error for UsecaseError {

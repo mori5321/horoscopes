@@ -2,7 +2,13 @@ use crate::domain::repositories::TodoRepository;
 use crate::domain::entities::todo::Todo;
 use crate::domain::entities::todo;
 use crate::usecases::Usecase;
-use crate::usecases::errors::{UsecaseError, UsecaseErrorType, from_domain_error};
+use crate::usecases::errors::{
+    UsecaseError,
+    UsecaseErrorType,
+    BusinessError,
+    SystemError,
+    from_domain_error,
+};
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -49,7 +55,7 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for UpdateTodoUsecase {
         if todo.is_none() {
             return Err(
                 UsecaseError {
-                    err_type: UsecaseErrorType::BusinessError,
+                    err_type: UsecaseErrorType::BusinessError(BusinessError::NotFoundError),
                     message: "temporary".to_string(),
                     child: None,
                 }
@@ -73,8 +79,8 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for UpdateTodoUsecase {
             Err(err) => {
                 return Err(
                     UsecaseError {
-                        err_type: UsecaseErrorType::BusinessError,
-                        message: "temporary".to_string(),
+                        err_type: UsecaseErrorType::SystemError(SystemError::UnknownError),
+                        message: "UnknownError".to_string(),
                         child: None,
                     }
             )

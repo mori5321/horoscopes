@@ -19,7 +19,6 @@ pub fn filter(
 
     warp::post()
         .and(warp::path::end())
-        .and(warp::post())
         .and(warp::body::json())
         .and(with_usecase(usecase))
         .and_then(handler)

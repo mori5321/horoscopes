@@ -46,12 +46,7 @@ async fn handler(
         },
         Err(err) => {
             let app_error = from_usecase_error(err);
-            // 「childがなければそこを末尾とする」 というロジックでいける。
             println!("Source: {:?}", app_error.source());
-            // Err(warp::reject::custom(app_error))
-            // Ok(warp::reply::json(&"Fail"))
-            //     .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::NO_CONTENT))
-            // return app_error
             Err(warp::reject::custom(app_error))
         }
     }
