@@ -5,7 +5,6 @@ use crate::domain::repositories::TodoRepository;
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
 
-
 pub struct TodoRepositoryOnMemory {}
 
 

@@ -1,6 +1,7 @@
 use crate::domain::repositories::TodoRepository;
 use crate::domain::entities::todo::Todo;
 use crate::usecases::Usecase;
+use crate::usecases::errors::{UsecaseError, from_domain_error, SystemError, UsecaseErrorType};
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -23,7 +24,7 @@ pub struct Input {
 }
 
 pub struct Output {
-    pub success: bool
+    pub id: String
 }
 
 pub struct NewTodoDTO {
@@ -36,40 +37,41 @@ pub struct CreateTodoUsecase {
     deps: Deps
 }
 
-impl Usecase<Input, Output, Deps> for CreateTodoUsecase {
+impl Usecase<Input, Result<Output, UsecaseError>, Deps> for CreateTodoUsecase {
     fn new(deps: Deps) -> Self {
         Self { deps }
     }
 
-    fn run(&self, input: Input) -> Output {
+    fn run(&self, input: Input) -> Result<Output, UsecaseError> {
         // TODO: generate ULID or define TodoFactory which generates ULID.
         // この辺のUserFactoryのアイデアもよい
         // https://github.com/nrslib/BottomUpDDDTheLaterPart/tree/master/src
         let id = "xxxxxx".to_string();
         let res_todo = Todo::new(
-            id,
+            id.clone(),
             input.new_todo_dto.title,
             false
         );
 
-        if let Err(_) = res_todo {
-            return Output { success: false }
+        if let Err(err) = res_todo {
+            return Err(from_domain_error(err))
         }
 
         // TODO: We need better error handling.
         match self.deps.todo_repository.store(res_todo.unwrap()) {
             Ok(_) => {
-                Output {
-                    success: true
-                }
+                Ok(Output {
+                    id 
+                })
             },
             Err(_) => {
-                // TODO: Handle Error
-                // format!("Error: {}", msg);
-                // Err("Failed to create todo")
-                Output {
-                    success: false
-                }
+                Err(
+                    UsecaseError {
+                        child: None,
+                        err_type: UsecaseErrorType::SystemError(SystemError::UnknownError),
+                        message: "Temporary Error".to_string(),
+                    }
+                )
             }
         }
     }

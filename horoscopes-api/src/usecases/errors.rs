@@ -20,13 +20,6 @@ pub fn from_domain_error(err: DomainError) -> UsecaseError {
                 err_type: UsecaseErrorType::BusinessError(BusinessError::ValidationError)
             }
         }
-        // _ => {
-        //     UsecaseError {
-        //         child: Some(Arc::new(err.clone())),
-        //         message: err.message.clone(),
-        //         err_type: UsecaseErrorType::SystemError,
-        //     }
-        // }
     }
 }
 

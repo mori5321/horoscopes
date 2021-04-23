@@ -84,6 +84,9 @@ const TITLE_MAX_LENGTH: usize = 80;
 
 impl Title {
     fn new(text: String) -> Result<Self, DomainError> {
+        // 今回の場合、文字数バリデーションをここのレイヤーに書くのはまちがい。
+        // なぜならば、「保存できる文字数をもっと減らしたい」となった場合に
+        // 旧データがコンストラクトできなくなってしまう。
         if text.len() > TITLE_MAX_LENGTH {
             return Err(
                 DomainError {

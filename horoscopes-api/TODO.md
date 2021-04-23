@@ -32,7 +32,7 @@
 - [ ] Docker化
 - [ ] デプロイ
 - [ ] SqlXをdieselと比較検討する。
-
+- [ ] Rust Docを活用したい
 
 # Want
 - [ ] cli作成
@@ -43,4 +43,6 @@
     - [ ] Method Not Allowd とか Invalid Field的なやつ
   - [ ] SystemError系はログを残したい
   - [ ] ログを取る際にエラーのバックトレースを残したい。(大本はどこのエラーなのか)
+  - [ ] Repository系のエラーも実装する
+
 

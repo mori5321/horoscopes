@@ -7,6 +7,7 @@ use crate::adapters::infrastructure::repositories::on_memory::todo_repository;
 use crate::usecases::Usecase;
 use crate::usecases::create_todo_usecase;
 use crate::usecases::create_todo_usecase::CreateTodoUsecase;
+use crate::filters::errors::{from_usecase_error};
 
 
 pub fn filter(
@@ -25,26 +26,26 @@ pub fn filter(
 }
 
 async fn handler(body: RequestBody, usecase: CreateTodoUsecase) -> Result<impl warp::Reply, warp::Rejection> {
-    format!("Create");
-    format!("Body: {}", body.todo.title);
-    
     let new_todo_dto = create_todo_usecase::NewTodoDTO {
         title: body.todo.title
     };
     let input = create_todo_usecase::Input { new_todo_dto };
     
-    let output = usecase.run(input);
+    let result = usecase.run(input);
     
-    // TODO: このError Handling微妙。
-    // Errorを返したほうがよい。
-    match output.success {
-        true => {
-            Ok(warp::reply::json(&"Success"))
-                .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::CREATED))
+    match result {
+        Err(err) => {
+            let app_error = from_usecase_error(err);
+            Err(warp::reject::custom(app_error))
         },
-        false => {
-            Ok(warp::reply::json(&"Failed"))            
-                .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::BAD_REQUEST))
+        Ok(output) => {
+            let todo_response = CreateTodoResponse { id: output.id };
+            let response = Response {
+                data: todo_response
+            };
+
+            Ok(warp::reply::json(&response))
+                .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::OK))
         }
     }
 }
@@ -59,6 +60,16 @@ struct NewTodo {
     title: String,
 }
 
+// TODO: これ共通型つくったほうがよさそうだな
+#[derive(Serialize, Deserialize)]
+struct Response {
+    data: CreateTodoResponse,
+}
+
+#[derive(Serialize, Deserialize)]
+struct CreateTodoResponse {
+    id: String
+}
 
 #[cfg(test)]
 mod tests {
