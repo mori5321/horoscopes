@@ -8,13 +8,14 @@ use crate::usecases::Usecase;
 use crate::usecases::create_todo_usecase;
 use crate::usecases::create_todo_usecase::CreateTodoUsecase;
 use crate::filters::errors::{AppError, from_usecase_error};
-
+use crate::adapters::infrastructure::providers::id::ulid_provider;
 
 pub fn filter(
 ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
 + Clone {
     let deps = create_todo_usecase::Deps::new(
-        Arc::new(todo_repository::TodoRepositoryOnMemory::new())
+        Arc::new(todo_repository::TodoRepositoryOnMemory::new()),
+        Arc::new(ulid_provider::ULIDProvider::new()),
     );
     let usecase = CreateTodoUsecase::new(deps);
 
@@ -85,7 +86,10 @@ mod tests {
         let todo_repository = Arc::new(
             TodoRepositoryForTest::new(vec![])
         );
-        let deps = create_todo_usecase::Deps::new(todo_repository.clone());
+        let deps = create_todo_usecase::Deps::new(
+            todo_repository.clone(),
+            Arc::new(ulid_provider::ULIDProvider::new()),
+        );
         let usecase = create_todo_usecase::CreateTodoUsecase::new(deps);
 
         return (usecase, todo_repository)
@@ -112,7 +116,7 @@ mod tests {
 
         assert_eq!(first_todo.title().value(), "NewTodo".to_string());
         assert_eq!(first_todo.is_done().value(), false);
-        assert_eq!(first_todo.id().value(), "xxxxxx".to_string());
+        assert_eq!(first_todo.id().value().len(), 26);
         
         assert_eq!(status_code, 201);
     }

@@ -8,19 +8,23 @@ use crate::usecases::common::errors::{
     UsecaseErrorType,
     BusinessError
 };
+use crate::usecases::common::ports::providers::IDProvider;
 use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct Deps {
-    todo_repository: Arc<dyn TodoRepository>
+    todo_repository: Arc<dyn TodoRepository>,
+    id_provider: Arc<dyn IDProvider>
 }
 
 impl Deps {
     pub fn new(
-        todo_repository: Arc<dyn TodoRepository>
+        todo_repository: Arc<dyn TodoRepository>,
+        id_provider: Arc<dyn IDProvider>
     ) -> Self {
         Self {
-            todo_repository
+            todo_repository,
+            id_provider,
         }
     }
 }
@@ -49,10 +53,7 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for CreateTodoUsecase {
     }
 
     fn run(&self, input: Input) -> Result<Output, UsecaseError> {
-        // TODO: generate ULID or define TodoFactory which generates ULID.
-        // この辺のUserFactoryのアイデアもよい
-        // https://github.com/nrslib/BottomUpDDDTheLaterPart/tree/master/src
-        let id = "xxxxxx".to_string();
+        let id = self.deps.id_provider.generate();
 
         let todo = Todo::new(
             id.clone(),

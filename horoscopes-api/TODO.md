@@ -39,6 +39,7 @@
   - [ ] filter生成コマンド 
 
 - [ ] Error系
+  - [ ] 生のコンストラクタを直で呼んでいるので、ラップしたコンストラクタを定義したい。
   - [ ] warpの組み込みのエラーをJSONに変換してResponseにしたい。
     - [ ] Method Not Allowd とか Invalid Field的なやつ
   - [ ] SystemError系はログを残したい
