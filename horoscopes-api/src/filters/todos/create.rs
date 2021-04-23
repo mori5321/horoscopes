@@ -5,8 +5,8 @@ use std::sync::Arc;
 use crate::filters::with_usecase;
 use crate::adapters::infrastructure::repositories::on_memory::todo_repository;
 use crate::usecases::Usecase;
-use crate::usecases::create_todo_usecase;
-use crate::usecases::create_todo_usecase::CreateTodoUsecase;
+use crate::usecases::todos::create_todo_usecase;
+use crate::usecases::todos::create_todo_usecase::CreateTodoUsecase;
 use crate::filters::errors::{AppError, from_usecase_error};
 use crate::adapters::infrastructure::providers::id::ulid_provider;
 
@@ -95,6 +95,8 @@ mod tests {
         return (usecase, todo_repository)
     }
 
+    const ULID_LENGTH: usize = 26;
+
     #[tokio::test]
     async fn handler_creates_todo() {
         let (usecase, todo_repository) = init_usecase();
@@ -116,7 +118,7 @@ mod tests {
 
         assert_eq!(first_todo.title().value(), "NewTodo".to_string());
         assert_eq!(first_todo.is_done().value(), false);
-        assert_eq!(first_todo.id().value().len(), 26);
+        assert_eq!(first_todo.id().value().len(), ULID_LENGTH);
         
         assert_eq!(status_code, 201);
     }

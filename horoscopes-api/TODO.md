@@ -48,3 +48,6 @@
   - [ ] Repository系のエラーも実装する
   - [ ] Error Messageなどのリテラルをyamlで管理したい、i18n的なやつ。
 
+
+- [ ] linterほしい
+  - [ ] できればprecommitとCIで動かしたい

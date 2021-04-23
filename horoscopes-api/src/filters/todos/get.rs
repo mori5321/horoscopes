@@ -2,8 +2,8 @@ use warp::Filter;
 use serde::{Serialize, Deserialize};
 use std::sync::Arc;
 use crate::filters::with_usecase;
-use crate::usecases::get_todo_usecase;
-use crate::usecases::get_todo_usecase::GetTodoUsecase;
+use crate::usecases::todos::get_todo_usecase;
+use crate::usecases::todos::get_todo_usecase::GetTodoUsecase;
 use crate::adapters::infrastructure::repositories::on_memory::todo_repository;
 use crate::usecases::Usecase;
 

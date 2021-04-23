@@ -20,10 +20,6 @@ impl TodoRepositoryForTest {
             todos: Mutex::new(todos)
         }
     }
-
-    // pub fn todos(&self) -> Vec<Todo> {
-    //     self.todos.lock().unwrap().clone()
-    // }
 }
 
 impl TodoRepository for TodoRepositoryForTest {

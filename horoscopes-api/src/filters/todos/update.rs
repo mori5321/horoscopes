@@ -6,8 +6,8 @@ use crate::filters::with_usecase;
 use crate::filters::errors::from_usecase_error;
 use crate::adapters::infrastructure::repositories::on_memory::todo_repository;
 use crate::usecases::Usecase;
-use crate::usecases::update_todo_usecase;
-use crate::usecases::update_todo_usecase::UpdateTodoUsecase;
+use crate::usecases::todos::update_todo_usecase;
+use crate::usecases::todos::update_todo_usecase::UpdateTodoUsecase;
 
 pub fn filter(
 ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
