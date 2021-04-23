@@ -4,7 +4,7 @@ Date: 2021-04-20
 
 ## Status
 
-DRAFT
+Accepted
 
 ## Context
 We need some error handling architecture.
@@ -56,7 +56,25 @@ even if the error is like 'Filter Error including Usecase Error including Domain
 
 
 ## Decision
-WIP...
+We define error layers as below.
+
+```
+Domain Error -> Usecase Error -> App Error -> (warp::rejection) -> (HTTP Error)
+Adapter Error ->
+```
+
+### Domain Error
+Domain Error is error about business rules.
+ex) We cannot set Todo 'done' if title includes 'WIP' or 'DRAFT' text.
+
+### Usecase Error
+Usecase Error is a error about application rules.
+ex) We cannot accept the Todo title of which length is less than 80 letters.
+  - This belongs to application rule, because when we set this rule, we usually assume that database constraint or user interface constraint.
 
 ## Consequences
-WIP...
+We can converts Domain specific error into HTTP Error.
+And the type of error is statically analyzed to some extent.
+
+
+
