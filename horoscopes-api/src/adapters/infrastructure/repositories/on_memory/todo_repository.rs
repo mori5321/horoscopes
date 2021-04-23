@@ -10,15 +10,13 @@ pub struct TodoRepositoryOnMemory {}
 
 pub static TODOS_ON_MEMORY: Lazy<Mutex<Vec<Todo>>> = Lazy::new(|| {
     let todos = vec![
-        Todo::new("ulid-00000001".to_string(), "hello".to_string(), false),
-        Todo::new("ulid-00000002".to_string(), "world".to_string(), false),
-        Todo::new("ulid-00000003".to_string(), "Let's Sing!".to_string(), false),
+        Todo::new("ulid-0001".to_string(), "hello".to_string(), false),
+        Todo::new("ulid-0002".to_string(), "world".to_string(), false),
+        Todo::new("ulid-0003".to_string(), "Let's Sing!".to_string(), false),
     ];
     
     Mutex::new(todos)
 });
-
-
 
 impl TodoRepositoryOnMemory {
     pub fn new() -> Self {

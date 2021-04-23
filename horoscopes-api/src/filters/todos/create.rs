@@ -7,7 +7,7 @@ use crate::adapters::infrastructure::repositories::on_memory::todo_repository;
 use crate::usecases::Usecase;
 use crate::usecases::create_todo_usecase;
 use crate::usecases::create_todo_usecase::CreateTodoUsecase;
-use crate::filters::errors::{from_usecase_error};
+use crate::filters::errors::{AppError, from_usecase_error};
 
 
 pub fn filter(
@@ -36,7 +36,7 @@ async fn handler(body: RequestBody, usecase: CreateTodoUsecase) -> Result<impl w
     match result {
         Err(err) => {
             let app_error = from_usecase_error(err);
-            Err(warp::reject::custom(app_error))
+            Err(warp::reject::custom::<AppError>(app_error))
         },
         Ok(output) => {
             let todo_response = CreateTodoResponse { id: output.id };
@@ -45,7 +45,10 @@ async fn handler(body: RequestBody, usecase: CreateTodoUsecase) -> Result<impl w
             };
 
             Ok(warp::reply::json(&response))
-                .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::OK))
+                .map(|rep| warp::reply::with_status(
+                        rep,
+                        warp::http::StatusCode::CREATED
+                    ))
         }
     }
 }
@@ -76,6 +79,7 @@ mod tests {
     use super::*;
     use warp::reply::Reply;
     use crate::adapters::infrastructure::repositories::for_test::todo_repository::TodoRepositoryForTest;
+    use crate::filters::errors::AppErrorType;
 
     fn init_usecase() -> (create_todo_usecase::CreateTodoUsecase, Arc<TodoRepositoryForTest>) {
         let todo_repository = Arc::new(
@@ -134,7 +138,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn handler_returns_400_when_title_is_over_80_letters() {
+    async fn handler_returns_unprocessable_entity_error_when_title_is_over_80_letters() {
         let (usecase, _) = init_usecase();
 
         let new_todo = NewTodo {
@@ -145,12 +149,13 @@ mod tests {
         let req_body = RequestBody {
             todo: new_todo
         };
-        let rep = handler(req_body, usecase).await.unwrap();
-        let res = rep.into_response();
-
-        let status_code = res.status();
         
-        assert_eq!(status_code, 400);
+        if let Err(rejection) = handler(req_body, usecase).await {
+            let err = rejection.find::<crate::filters::errors::AppError>().unwrap();
+            assert_eq!(err.err_type, AppErrorType::UnprocessableEntity);
+            return;
+        }
+        assert!(false)
     }
 }
 

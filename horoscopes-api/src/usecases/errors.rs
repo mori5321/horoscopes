@@ -32,6 +32,7 @@ pub enum UsecaseErrorType {
 #[derive(Debug, Clone)]
 pub enum BusinessError {
     ValidationError,
+    DuplicatedError,
     NotFoundError
 }
 

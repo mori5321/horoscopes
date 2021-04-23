@@ -1,7 +1,13 @@
 use crate::domain::repositories::TodoRepository;
 use crate::domain::entities::todo::Todo;
+use crate::domain::services::todo_service;
 use crate::usecases::Usecase;
-use crate::usecases::errors::{UsecaseError, SystemError, UsecaseErrorType};
+use crate::usecases::errors::{
+    UsecaseError,
+    SystemError,
+    UsecaseErrorType,
+    BusinessError
+};
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -47,14 +53,27 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for CreateTodoUsecase {
         // この辺のUserFactoryのアイデアもよい
         // https://github.com/nrslib/BottomUpDDDTheLaterPart/tree/master/src
         let id = "xxxxxx".to_string();
+
         let todo = Todo::new(
             id.clone(),
             input.new_todo_dto.title,
             false
         );
 
+        let service = todo_service::TodoService::new(self.deps.todo_repository.clone());
 
-        // TODO: We need better error handling.
+        if service.is_duplicated(&todo) {
+            return Err(UsecaseError {
+                child: None,
+                err_type: UsecaseErrorType::BusinessError(BusinessError::DuplicatedError),
+                message: "Todo of this ID already exists.".to_string(),
+            })
+        }
+            
+        if let Err(e) = validator::validate_todo(&todo) {
+            return Err(e)
+        }
+
         match self.deps.todo_repository.store(todo) {
             Ok(_) => {
                 Ok(Output {
@@ -71,5 +90,30 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for CreateTodoUsecase {
                 )
             }
         }
+    }
+}
+
+mod validator {
+    use super::*;
+
+    const TITLE_MAX_LENGTH: usize = 80;
+
+    pub fn validate_todo(todo: &Todo) -> Result<(), UsecaseError> {
+        if todo.title().value().len() > TITLE_MAX_LENGTH {
+            return Err(
+                UsecaseError {
+                    child: None,
+                    err_type: UsecaseErrorType::BusinessError(
+                        BusinessError::ValidationError
+                    ),
+                    message: format!(
+                        "Title length must be less than {}.",
+                        TITLE_MAX_LENGTH,
+                    )
+                }
+            )
+        }
+        
+        return Ok(())
     }
 }

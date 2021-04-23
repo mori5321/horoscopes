@@ -10,7 +10,7 @@ pub struct AppError {
     pub message: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum AppErrorType {
     BadRequest,
     NotFound,
@@ -36,6 +36,13 @@ pub fn from_usecase_error(err: UsecaseError) -> AppError {
                         message: err.message.clone(),
                     }
                 },
+                BusinessError::DuplicatedError => {
+                    AppError {
+                        child: err.clone(),
+                        err_type: AppErrorType::BadRequest,
+                        message: err.message.clone(),
+                    }
+                }
             }
         },
         UsecaseErrorType::SystemError(ref system_error) => {
