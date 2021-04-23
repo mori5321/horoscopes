@@ -96,9 +96,9 @@ mod tests {
     #[tokio::test]
     async fn handler_returns_todos_json_response() {
         let todos = vec![
-            todo::Todo::new("ulid-0001".to_string(), "First Task".to_string(), false).unwrap(),
-            todo::Todo::new("ulid-0002".to_string(), "Second Task".to_string(), false).unwrap(),
-            todo::Todo::new("ulid-0003".to_string(), "Third Task".to_string(), false).unwrap(),
+            todo::Todo::new("ulid-0001".to_string(), "First Task".to_string(), false),
+            todo::Todo::new("ulid-0002".to_string(), "Second Task".to_string(), false),
+            todo::Todo::new("ulid-0003".to_string(), "Third Task".to_string(), false),
         ];
 
         let todo_repository = Arc::new(
