@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::fmt;
 use warp::reject::Reject;
-use crate::usecases::errors::{UsecaseError, UsecaseErrorType, BusinessError, SystemError};
+use crate::usecases::common::errors::{UsecaseError, UsecaseErrorType, BusinessError, SystemError};
 
 #[derive(Debug)]
 pub struct AppError {

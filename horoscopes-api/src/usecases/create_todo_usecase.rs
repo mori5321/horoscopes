@@ -2,7 +2,7 @@ use crate::domain::repositories::TodoRepository;
 use crate::domain::entities::todo::Todo;
 use crate::domain::services::todo_service;
 use crate::usecases::Usecase;
-use crate::usecases::errors::{
+use crate::usecases::common::errors::{
     UsecaseError,
     SystemError,
     UsecaseErrorType,

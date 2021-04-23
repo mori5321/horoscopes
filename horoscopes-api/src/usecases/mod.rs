@@ -1,4 +1,4 @@
-pub mod errors;
+pub mod common;
 
 pub mod list_todos_usecase;
 pub mod get_todo_usecase;
