@@ -65,8 +65,6 @@ impl PartialEq for Todo {
 #[derive(Clone, Debug)]
 pub struct Title(String);
 
-const TITLE_MAX_LENGTH: usize = 80;
-
 impl Title {
     fn new(text: String) -> Self {
         Title(text)

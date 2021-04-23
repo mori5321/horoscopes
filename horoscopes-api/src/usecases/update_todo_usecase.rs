@@ -7,7 +7,6 @@ use crate::usecases::errors::{
     UsecaseErrorType,
     BusinessError,
     SystemError,
-    from_domain_error,
 };
 use std::sync::Arc;
 
@@ -72,7 +71,7 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for UpdateTodoUsecase {
         let result = self.deps.todo_repository.store(updated_todo);
         match result {
             Ok(_) => Ok(Output {}),
-            Err(err) => {
+            Err(_err) => {
                 // TODO: impl Repository Error or Adapter Error
                 return Err(
                     UsecaseError {
