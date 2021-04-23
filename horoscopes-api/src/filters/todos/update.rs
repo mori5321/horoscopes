@@ -45,8 +45,6 @@ async fn handler(
         },
         Err(err) => {
             let app_error = from_usecase_error(err);
-            // Err(app_error)
-            // println!("Source: {:?}", app_error.source());
             Err(warp::reject::custom(app_error))
         }
     }

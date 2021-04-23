@@ -22,7 +22,6 @@ pub fn filter(
 
 async fn handler(usecase: list_todos_usecase::ListTodosUsecase)
     -> Result<impl warp::Reply, warp::Rejection> {
-    // -> Result<warp::reply::WithStatus<warp::reply::Json>, warp::Rejection> {
     let input = list_todos_usecase::Input{};
     let output = usecase.run(input);
 

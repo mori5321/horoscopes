@@ -18,11 +18,9 @@
   - [x] 試実装してみる。
   - [x]各階層にエラーをもたせる
   - [x] 各階層で発生したエラーを最終的にどのように捌くべき?
-- [ ] ULIDの生成・注入
-- [ ] Validation
-  - [ ] Handler層でのValidation
-    - [ ] Stringの文字数
-    - [ ] 数値の不許可範囲(<- ほぼDomainErrorでは...?)
+- [x] ULIDの生成・注入
+- [x] Validation
+  - [x] Usecase層でのValidation
   - [x] Entity層でのValidation
 - [ ] 認証との連携
 - [x] Test
