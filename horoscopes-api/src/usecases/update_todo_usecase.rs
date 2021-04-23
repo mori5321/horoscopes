@@ -62,28 +62,25 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for UpdateTodoUsecase {
             )
         }
         
-        let res_updated_todo = Todo::new(
+        let updated_todo = Todo::new(
             input.update_todo_dto.id,
             input.update_todo_dto.title,
             input.update_todo_dto.is_done,
         );
 
-        if let Err(err) = res_updated_todo {
-            return Err(from_domain_error(err))
-        }
 
-        let result = self.deps.todo_repository.store(res_updated_todo.unwrap());
+        let result = self.deps.todo_repository.store(updated_todo);
         match result {
-            // TODO: we need better error handling.
             Ok(_) => Ok(Output {}),
             Err(err) => {
+                // TODO: impl Repository Error or Adapter Error
                 return Err(
                     UsecaseError {
                         err_type: UsecaseErrorType::SystemError(SystemError::UnknownError),
                         message: "UnknownError".to_string(),
                         child: None,
                     }
-            )
+                )
             }
         }
     }

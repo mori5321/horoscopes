@@ -1,7 +1,7 @@
 use crate::domain::repositories::TodoRepository;
 use crate::domain::entities::todo::Todo;
 use crate::usecases::Usecase;
-use crate::usecases::errors::{UsecaseError, from_domain_error, SystemError, UsecaseErrorType};
+use crate::usecases::errors::{UsecaseError, SystemError, UsecaseErrorType};
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -47,18 +47,15 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for CreateTodoUsecase {
         // この辺のUserFactoryのアイデアもよい
         // https://github.com/nrslib/BottomUpDDDTheLaterPart/tree/master/src
         let id = "xxxxxx".to_string();
-        let res_todo = Todo::new(
+        let todo = Todo::new(
             id.clone(),
             input.new_todo_dto.title,
             false
         );
 
-        if let Err(err) = res_todo {
-            return Err(from_domain_error(err))
-        }
 
         // TODO: We need better error handling.
-        match self.deps.todo_repository.store(res_todo.unwrap()) {
+        match self.deps.todo_repository.store(todo) {
             Ok(_) => {
                 Ok(Output {
                     id 

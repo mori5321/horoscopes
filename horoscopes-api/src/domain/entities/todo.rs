@@ -1,5 +1,4 @@
 use std::cmp::Eq;
-use crate::domain::errors::{DomainError, DomainErrorType};
 
 #[derive(Clone, Debug)]
 pub struct Todo {
@@ -9,20 +8,14 @@ pub struct Todo {
 }
 
 impl Todo {
-    pub fn new(id: String, title: String, is_done: bool) -> Result<Self, DomainError> {
-        let res_title = Title::new(title);
-        
-        if let Err(err) = res_title {
-            return Err(err)
-        }
-
+    pub fn new(id: String, title: String, is_done: bool) -> Self {
         let todo = Self {
             id: ID::new(id),
-            title: res_title.unwrap(),
+            title: Title::new(title),
             is_done: IsDone::new(is_done),
         };
 
-        return Ok(todo)
+        return todo
     }
 
     pub fn id(&self) -> ID {
@@ -75,20 +68,8 @@ pub struct Title(String);
 const TITLE_MAX_LENGTH: usize = 80;
 
 impl Title {
-    fn new(text: String) -> Result<Self, DomainError> {
-        // 今回の場合、文字数バリデーションをここのレイヤーに書くのはまちがい。
-        // なぜならば、「保存できる文字数をもっと減らしたい」となった場合に
-        // 旧データがコンストラクトできなくなってしまう。
-        if text.len() > TITLE_MAX_LENGTH {
-            return Err(
-                DomainError {
-                    err_type: DomainErrorType::ExceedMaxLengthError,
-                    message: format!("Title must be less than {} letters", TITLE_MAX_LENGTH)
-                }
-            )
-        }
-
-        Ok(Title(text))
+    fn new(text: String) -> Self {
+        Title(text)
     }
 
     pub fn value(&self) -> String {
