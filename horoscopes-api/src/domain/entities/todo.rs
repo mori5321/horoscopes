@@ -8,14 +8,6 @@ pub struct Todo {
     is_done: IsDone,
 }
 
-// 全体的にValueObjectの知識がEntityの外に出ていくのはよくないかもしれない...?
-// - ValueObjectの生成・操作・アクセスはEntityからのみにすべき?
-// - そうするとリポジトリの引数などは、Primitiveタイプなどを使うべきなのか...?
-//
-// 一旦はPublicにする方針で良しとする
-// getterを逐一用意する & repositoryなどではPrimitiveタイプを使う、という方針は成り立ちはしそう
-// 良いかはわからない。
-
 impl Todo {
     pub fn new(id: String, title: String, is_done: bool) -> Result<Self, DomainError> {
         let res_title = Title::new(title);
