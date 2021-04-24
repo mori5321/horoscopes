@@ -65,3 +65,48 @@ fn from_dto(todo_dto: get_todo_usecase::TodoDTO) -> Response {
     }
 }
 
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use warp::reply::Reply;
+    use serde_json::json;
+    use assert_json_diff::assert_json_eq;
+    use crate::domain::entities::todo;
+    use crate::adapters::infrastructure::repositories::for_test::todo_repository::TodoRepositoryForTest;
+
+    #[tokio::test]
+    async fn handler_returns_todos_json_response() {
+        let todos = vec![
+            todo::Todo::new("ulid-0001".to_string(), "First Task".to_string(), false),
+        ];
+    
+        let todo_repository = Arc::new(
+            TodoRepositoryForTest::new(todos)
+        );
+
+        let deps = get_todo_usecase::Deps::new(todo_repository);
+        let usecase = get_todo_usecase::GetTodoUsecase::new(deps);
+
+        let rep = handler("ulid-0001".to_string(), usecase).await.unwrap();
+        let res = rep.into_response();
+
+        let status_code = res.status();
+        let body = res.into_body();
+        let bytes = hyper::body::to_bytes(body).await.unwrap();
+
+        let json = json!({
+            "data": {
+                "id": "ulid-0001",
+                "title": "First Task",
+                "is_done": false,
+            }
+        });
+
+        assert_eq!(status_code, warp::http::StatusCode::OK);
+        assert_json_eq!(
+            serde_json::from_slice::<serde_json::Value>(&bytes).unwrap(),
+            json
+        )
+    }
+}
