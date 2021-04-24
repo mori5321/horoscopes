@@ -61,3 +61,84 @@ struct UpdateTodo {
     is_done: bool,
     title: String,
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use warp::reply::Reply;
+    use crate::adapters::infrastructure::repositories::for_test::todo_repository::TodoRepositoryForTest;
+    use crate::filters::errors::AppErrorType;
+    use crate::domain::entities::todo;
+    use crate::domain::repositories::TodoRepository;
+
+    fn init_usecase() -> (update_todo_usecase::UpdateTodoUsecase, Arc<TodoRepositoryForTest>) {
+        let todo_repository = Arc::new(
+            TodoRepositoryForTest::new(vec![
+                todo::Todo::new(
+                    "ulid-0001".to_string(),
+                    "Fly me to the moon".to_string(),
+                    false,
+                )
+            ])
+        );
+        let deps = update_todo_usecase::Deps::new(
+            todo_repository.clone()
+        );
+        let usecase = update_todo_usecase::UpdateTodoUsecase::new(deps);
+
+        return (usecase, todo_repository)
+    }
+
+    #[tokio::test]
+    async fn handler_updates_todo_properly() {
+        let (usecase, todo_repository) = init_usecase();
+
+        let update_todo = UpdateTodo {
+            is_done: true,
+            title: "What kind of fool I am".to_string(),
+        };
+
+        let req_body = RequestBody {
+            todo: update_todo
+        };
+        let rep = handler("ulid-0001".to_string(), req_body, usecase).await.unwrap();
+        let res = rep.into_response();
+
+        let status_code = res.status();
+
+        assert_eq!(status_code, 204);
+
+        let new_todo = todo_repository.find(
+            todo::ID::from_str("ulid-0001")
+        ).unwrap();
+        
+        assert_eq!(new_todo.title().value(), "What kind of fool I am".to_string());
+        assert_eq!(new_todo.is_done().value(), true);
+    }
+
+    #[tokio::test]
+    async fn handler_returns_not_found_error_when_invalid_id_passed() {
+        let (usecase, todo_repository) = init_usecase();
+
+        let update_todo = UpdateTodo {
+            is_done: true,
+            title: "What kind of fool I am".to_string(),
+        };
+
+        let req_body = RequestBody {
+            todo: update_todo
+        };
+        
+        if let Err(rejection) = handler("invalid_id".to_string(), req_body, usecase).await {
+            let err = rejection.find::<crate::filters::errors::AppError>().unwrap();
+            assert_eq!(err.err_type, AppErrorType::NotFound);
+
+            let todos = todo_repository.list();
+            assert_eq!(todos.len(), 1);
+
+            return;
+        };
+        assert!(false);
+    }
+}

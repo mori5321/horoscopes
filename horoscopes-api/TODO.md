@@ -32,6 +32,8 @@
 - [ ] SqlXをdieselと比較検討する。
 - [ ] Rust Docを活用したい
 
+- [ ] Organization/User概念を早いとこつくってしまう。
+
 # Want
 - [ ] cli作成
   - [ ] filter生成コマンド 
@@ -47,7 +49,6 @@
     - [ ] エラーツリーをVecで表現する
   - [ ] Repository系のエラーも実装する
   - [ ] Error Messageなどのリテラルをyamlで管理したい、i18n的なやつ。
-
 
 - [ ] linterほしい
   - [ ] できればprecommitとCIで動かしたい

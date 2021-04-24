@@ -81,6 +81,7 @@ mod tests {
     use warp::reply::Reply;
     use crate::adapters::infrastructure::repositories::for_test::todo_repository::TodoRepositoryForTest;
     use crate::filters::errors::AppErrorType;
+    use crate::domain::repositories::TodoRepository;
 
     fn init_usecase() -> (create_todo_usecase::CreateTodoUsecase, Arc<TodoRepositoryForTest>) {
         let todo_repository = Arc::new(
@@ -145,7 +146,7 @@ mod tests {
 
     #[tokio::test]
     async fn handler_returns_unprocessable_entity_error_when_title_is_over_80_letters() {
-        let (usecase, _) = init_usecase();
+        let (usecase, todo_repository) = init_usecase();
 
         let new_todo = NewTodo {
             title: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string()
@@ -159,6 +160,10 @@ mod tests {
         if let Err(rejection) = handler(req_body, usecase).await {
             let err = rejection.find::<crate::filters::errors::AppError>().unwrap();
             assert_eq!(err.err_type, AppErrorType::UnprocessableEntity);
+            
+            let todos = todo_repository.list();
+            assert_eq!(todos.len(), 0);
+            
             return;
         }
         assert!(false)
