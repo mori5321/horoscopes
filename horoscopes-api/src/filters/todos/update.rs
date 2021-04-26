@@ -107,7 +107,7 @@ mod tests {
 
         let status_code = res.status();
 
-        assert_eq!(status_code, 204);
+        assert_eq!(status_code, warp::http::StatusCode::NO_CONTENT);
 
         let new_todo = todo_repository.find(
             todo::ID::from_str("ulid-0001")

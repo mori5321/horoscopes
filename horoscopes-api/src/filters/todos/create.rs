@@ -121,7 +121,7 @@ mod tests {
         assert_eq!(first_todo.is_done().value(), false);
         assert_eq!(first_todo.id().value().len(), ULID_LENGTH);
         
-        assert_eq!(status_code, 201);
+        assert_eq!(status_code, warp::http::StatusCode::CREATED);
     }
     
     #[tokio::test]
@@ -141,7 +141,7 @@ mod tests {
 
         let status_code = res.status();
         
-        assert_eq!(status_code, 201);
+        assert_eq!(status_code, warp::http::StatusCode::CREATED);
     }
 
     #[tokio::test]

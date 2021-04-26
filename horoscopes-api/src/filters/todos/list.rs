@@ -133,7 +133,7 @@ mod tests {
                 ]
             });
         
-        assert_eq!(status_code, 200);
+        assert_eq!(status_code, warp::http::StatusCode::OK);
         assert_json_eq!(
             serde_json::from_slice::<serde_json::Value>(&bytes).unwrap(),
             json
