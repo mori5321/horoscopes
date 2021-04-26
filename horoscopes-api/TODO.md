@@ -30,7 +30,7 @@
 - [ ] Docker化
 - [ ] デプロイ
 - [ ] SqlXをdieselと比較検討する。
-- [ ] Rust Docを活用したい
+- [x] Rust Docを活用したい
 
 - [ ] Organization/User概念を早いとこつくってしまう。
 
