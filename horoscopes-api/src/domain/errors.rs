@@ -4,8 +4,25 @@ use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct DomainError {
-    pub err_type: DomainErrorType,
-    pub message: String,
+    err_type: DomainErrorType,
+    message: String,
+}
+
+impl DomainError {
+    pub fn new(err_type: DomainErrorType, message: String) -> Self {
+        Self {
+            err_type,
+            message,
+        }
+    }
+
+    pub fn err_type(&self) -> DomainErrorType {
+        self.err_type.clone()
+    }
+
+    pub fn message(&self) -> String {
+        self.message.clone()
+    }
 }
 
 #[derive(Debug, Clone)]

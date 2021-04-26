@@ -30,11 +30,11 @@ impl UsecaseError {
 }
 
 pub fn from_domain_error(err: DomainError) -> UsecaseError {
-    match err.err_type {
+    match err.err_type() {
         DomainErrorType::ExceedMaxLengthError => {
             UsecaseError {
                 child: Some(Arc::new(err.clone())),
-                message: err.message.to_string(),
+                message: err.message(),
                 err_type: UsecaseErrorType::BusinessError(BusinessError::ValidationError)
             }
         }
