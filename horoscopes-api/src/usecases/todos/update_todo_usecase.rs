@@ -53,11 +53,10 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for UpdateTodoUsecase {
 
         if todo.is_none() {
             return Err(
-                UsecaseError {
-                    err_type: UsecaseErrorType::BusinessError(BusinessError::NotFoundError),
-                    message: "temporary".to_string(),
-                    child: None,
-                }
+                UsecaseError::new(
+                    UsecaseErrorType::BusinessError(BusinessError::NotFoundError),
+                    "temporary error".to_string()
+                )
             )
         }
         
@@ -74,11 +73,10 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for UpdateTodoUsecase {
             Err(_err) => {
                 // TODO: impl Repository Error or Adapter Error
                 return Err(
-                    UsecaseError {
-                        err_type: UsecaseErrorType::SystemError(SystemError::UnknownError),
-                        message: "UnknownError".to_string(),
-                        child: None,
-                    }
+                    UsecaseError::new(
+                        UsecaseErrorType::SystemError(SystemError::UnknownError),
+                        "temporary error".to_string()
+                    )
                 )
             }
         }

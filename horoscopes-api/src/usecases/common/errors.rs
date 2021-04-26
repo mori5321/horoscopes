@@ -6,9 +6,27 @@ use std::fmt::Debug;
 
 #[derive(Debug, Clone)]
 pub struct UsecaseError {
-    pub child: Option<Arc<dyn Error + Sync + Send>>,
-    pub message: String,
-    pub err_type: UsecaseErrorType, 
+    child: Option<Arc<dyn Error + Sync + Send>>,
+    message: String,
+    err_type: UsecaseErrorType, 
+}
+
+impl UsecaseError {
+    pub fn new(err_type: UsecaseErrorType, message: String) -> Self {
+        Self {
+            child: None,
+            message,
+            err_type,
+        }
+    }
+
+    pub fn message(&self) -> String {
+        self.message.clone()
+    }
+
+    pub fn err_type(&self) -> UsecaseErrorType {
+        self.err_type.clone()
+    }
 }
 
 pub fn from_domain_error(err: DomainError) -> UsecaseError {

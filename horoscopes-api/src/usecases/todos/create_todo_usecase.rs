@@ -64,11 +64,12 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for CreateTodoUsecase {
         let service = todo_service::TodoService::new(self.deps.todo_repository.clone());
 
         if service.is_duplicated(&todo) {
-            return Err(UsecaseError {
-                child: None,
-                err_type: UsecaseErrorType::BusinessError(BusinessError::DuplicatedError),
-                message: "Todo of this ID already exists.".to_string(),
-            })
+            return Err(
+                UsecaseError::new(
+                    UsecaseErrorType::BusinessError(BusinessError::DuplicatedError),
+                    "Todo of this ID already exists".to_string(),
+                )
+            )
         }
             
         if let Err(e) = validator::validate_todo(&todo) {
@@ -83,11 +84,10 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for CreateTodoUsecase {
             },
             Err(_) => {
                 Err(
-                    UsecaseError {
-                        child: None,
-                        err_type: UsecaseErrorType::SystemError(SystemError::UnknownError),
-                        message: "Temporary Error".to_string(),
-                    }
+                    UsecaseError::new(
+                        UsecaseErrorType::SystemError(SystemError::UnknownError),
+                        "Temporary Error".to_string()
+                    )
                 )
             }
         }
@@ -102,16 +102,10 @@ mod validator {
     pub fn validate_todo(todo: &Todo) -> Result<(), UsecaseError> {
         if todo.title().value().len() > TITLE_MAX_LENGTH {
             return Err(
-                UsecaseError {
-                    child: None,
-                    err_type: UsecaseErrorType::BusinessError(
-                        BusinessError::ValidationError
-                    ),
-                    message: format!(
-                        "Title length must be less than {}.",
-                        TITLE_MAX_LENGTH,
-                    )
-                }
+                UsecaseError::new(
+                    UsecaseErrorType::BusinessError(BusinessError::ValidationError),
+                    format!("Title length must be less than {}", TITLE_MAX_LENGTH)
+                )
             )
         }
         

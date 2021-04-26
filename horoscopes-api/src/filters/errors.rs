@@ -19,28 +19,28 @@ pub enum AppErrorType {
 }
 
 pub fn from_usecase_error(err: UsecaseError) -> AppError {
-    match err.err_type {
+    match err.err_type() {
         UsecaseErrorType::BusinessError(ref business_error) => {
             match business_error {
                 BusinessError::NotFoundError => {
                     AppError {
                         child: err.clone(),
                         err_type: AppErrorType::NotFound,
-                        message: err.message.clone(),
+                        message: err.message(),
                     }
                 },
                 BusinessError::ValidationError => {
                     AppError {
                         child: err.clone(),
                         err_type: AppErrorType::UnprocessableEntity,
-                        message: err.message.clone(),
+                        message: err.message(),
                     }
                 },
                 BusinessError::DuplicatedError => {
                     AppError {
                         child: err.clone(),
                         err_type: AppErrorType::BadRequest,
-                        message: err.message.clone(),
+                        message: err.message(),
                     }
                 }
             }
@@ -51,7 +51,7 @@ pub fn from_usecase_error(err: UsecaseError) -> AppError {
                     AppError { 
                         child: err.clone(),
                         err_type: AppErrorType::Internal,
-                        message: err.message.clone(),
+                        message: err.message(),
                     }
                 }
             }
