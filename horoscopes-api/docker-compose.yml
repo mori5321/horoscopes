@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./build/Dockerfile.Develop
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+      - type: volume
+        source: rust_dev_target
+        target: /app/target
+    ports:
+      - 3030:3030
+    tty: true
+    command:
+      cargo watch -x run
+    environment:
+      CARGO_BUILD_TARGET_DIR: /app/target
+volumes:
+  rust_dev_target:
+    external: true
