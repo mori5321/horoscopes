@@ -28,6 +28,9 @@
   - [x] 結合テスト
 - [x] ロギング
 - [ ] Docker化
+  - [x] 開発環境
+  - [ ] build環境
+  - [ ] production環境
 - [ ] デプロイ
 - [ ] SqlXをdieselと比較検討する。
 - [x] Rust Docを活用したい

@@ -15,7 +15,7 @@ async fn main() {
 
     warp::serve(
         filters::filters().with(warp::log("horoscopes"))
-    ).run(([127, 0, 0, 1], port))
+    ).run(([0, 0, 0, 0], port))
         .await;
 }
 
