@@ -15,7 +15,7 @@ impl Todo {
             is_done: IsDone::new(is_done),
         };
 
-        return todo
+        return todo;
     }
 
     pub fn id(&self) -> ID {
@@ -44,7 +44,7 @@ impl ID {
     pub fn value(&self) -> String {
         self.to_string()
     }
-    
+
     pub fn from_str(str: &str) -> ID {
         Self::new(str.to_string())
     }
@@ -61,7 +61,6 @@ impl PartialEq for Todo {
     }
 }
 
-
 #[derive(Clone, Debug)]
 pub struct Title(String);
 
@@ -73,7 +72,7 @@ impl Title {
     pub fn value(&self) -> String {
         self.to_string()
     }
-    
+
     fn to_string(&self) -> String {
         let Title(text) = self;
         text.clone()
