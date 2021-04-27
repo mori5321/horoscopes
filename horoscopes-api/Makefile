@@ -1,6 +1,6 @@
 # 開発サーバー起動
 up:
-	docker-compose up -f docker-compose.dev.yml
+	docker-compose -f docker-compose.dev.yml up
 
 # 仮置き
 build.release:
