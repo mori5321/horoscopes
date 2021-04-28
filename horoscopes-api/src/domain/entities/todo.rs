@@ -31,6 +31,12 @@ impl Todo {
     }
 }
 
+impl PartialEq for Todo {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct ID(String);
 
@@ -52,12 +58,6 @@ impl ID {
     fn to_string(&self) -> String {
         let ID(id) = self;
         id.clone()
-    }
-}
-
-impl PartialEq for Todo {
-    fn eq(&self, other: &Self) -> bool {
-        self.id == other.id
     }
 }
 

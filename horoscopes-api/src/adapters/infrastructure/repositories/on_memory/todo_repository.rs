@@ -7,21 +7,33 @@ use std::sync::Mutex;
 
 pub struct TodoRepositoryOnMemory {}
 
+pub static TODOS_ON_MEMORY: Lazy<Mutex<Vec<Todo>>> =
+    Lazy::new(|| {
+        let todos = vec![
+            Todo::new(
+                "id-0001".to_string(),
+                "hello".to_string(),
+                false,
+            ),
+            Todo::new(
+                "id-0002".to_string(),
+                "world".to_string(),
+                false,
+            ),
+            Todo::new(
+                "id-0003".to_string(),
+                "Let's Sing!".to_string(),
+                false,
+            ),
+        ];
 
-pub static TODOS_ON_MEMORY: Lazy<Mutex<Vec<Todo>>> = Lazy::new(|| {
-    let todos = vec![
-        Todo::new("id-0001".to_string(), "hello".to_string(), false),
-        Todo::new("id-0002".to_string(), "world".to_string(), false),
-        Todo::new("id-0003".to_string(), "Let's Sing!".to_string(), false),
-    ];
-    
-    Mutex::new(todos)
-});
+        Mutex::new(todos)
+    });
 
 impl TodoRepositoryOnMemory {
     pub fn new() -> Self {
         Self {}
-    } 
+    }
 }
 
 impl TodoRepository for TodoRepositoryOnMemory {
@@ -38,14 +50,14 @@ impl TodoRepository for TodoRepositoryOnMemory {
     fn store(&self, todo: Todo) -> Result<(), String> {
         let mut todos = TODOS_ON_MEMORY.lock().unwrap();
 
-        let opt_idx = todos.clone().into_iter().position(|t| {
-            t == todo
-        });
+        let opt_idx =
+            todos.clone().into_iter().position(|t| t == todo);
 
         match opt_idx {
             Some(idx) => {
-                todos.splice(idx..idx + 1, vec![todo].iter().cloned());
-                Ok(()) 
+                todos
+                    .splice(idx..idx + 1, vec![todo].iter().cloned());
+                Ok(())
             }
             None => {
                 todos.push(todo.clone());
@@ -57,18 +69,15 @@ impl TodoRepository for TodoRepositoryOnMemory {
     fn remove(&self, id: todo::ID) -> Result<(), String> {
         let mut todos = TODOS_ON_MEMORY.lock().unwrap();
 
-        let opt_idx = todos.clone().into_iter().position(|t| {
-            t.id() == id
-        });
+        let opt_idx =
+            todos.clone().into_iter().position(|t| t.id() == id);
 
         match opt_idx {
             Some(idx) => {
                 todos.remove(idx);
                 Ok(())
-            },
-            None => {
-                Err("Not Found Error".to_string())
             }
+            None => Err("Not Found Error".to_string()),
         }
     }
 }
