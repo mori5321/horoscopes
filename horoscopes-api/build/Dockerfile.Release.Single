@@ -10,9 +10,10 @@ RUN apt-get update
 RUN apt-get install musl-tools -y
 
 # Single Binaryh
-# RUN cargo build --release --target=x86_64-unknown-linux-musl
-RUN cargo build --release
+RUN cargo build --release --target=x86_64-unknown-linux-musl
+# RUN cargo build --release
 RUN cargo install --path .
 
 # CMD, ENTRYPOINTなどの起動コマンドが無いとDockerは起動してもすぐに終了してしまう。
 CMD ["horoscopes-api"]
+
