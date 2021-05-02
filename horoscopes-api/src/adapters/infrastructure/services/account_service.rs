@@ -15,10 +15,11 @@ impl AccountServiceImpl {
     }
 }
 
+// TODO: SALTをUser毎に変更したい
 const SALT: &[u8; 10] = b"horoscopes";
 
 impl AccountService for AccountServiceImpl {
-    fn to_account(&self, signup: &SignUp) -> Account {
+    fn from_signup(&self, signup: &SignUp) -> Account {
         let config = Config::default();
         let salt = SALT;
         let password = signup.password().value();

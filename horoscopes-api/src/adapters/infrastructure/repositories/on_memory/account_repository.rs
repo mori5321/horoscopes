@@ -20,7 +20,7 @@ pub static ACCOUNTS_ON_MEMORY: Lazy<Mutex<Vec<Account>>> =
         let service = AccountServiceImpl::new(Arc::new(
             AccountRepositoryOnMemory::new(),
         ));
-        let account = service.to_account(&signup);
+        let account = service.from_signup(&signup);
 
         println!("Account: {:?}", account);
         let accounts = vec![account];

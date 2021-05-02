@@ -73,7 +73,7 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
             ));
         }
 
-        let account = self.deps.account_service.to_account(&signup);
+        let account = self.deps.account_service.from_signup(&signup);
         self.deps.account_repository.store(account).unwrap();
 
         Ok(Output {})

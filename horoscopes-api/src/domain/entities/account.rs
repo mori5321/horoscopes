@@ -135,6 +135,15 @@ impl Email {
     fn new(email: String) -> Self {
         Email(email)
     }
+
+    pub fn from_string(s: String) -> Self {
+        Self::new(s)
+    }
+
+    pub fn value(&self) -> String {
+        let Self(s) = self;
+        return s.clone();
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
