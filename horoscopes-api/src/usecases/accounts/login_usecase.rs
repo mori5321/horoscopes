@@ -72,6 +72,11 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
                 let header: Header = Default::default();
                 let mut claims = BTreeMap::new();
                 claims.insert("user_id", "xxxxxxxx0001");
+                // Memo
+                // - SecretKeyに何を使うのか
+                // - Tokenの型はどんなものなのか
+                //      - BtreeMapである必要性なさそう。
+                //      - UserID, ExpiresAt, OrganizationID(?)
 
                 let access_token: Token<
                     Header,
