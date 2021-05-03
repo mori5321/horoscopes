@@ -44,12 +44,6 @@ impl PartialEq for Account {
     }
 }
 
-// - a. Hash変換をドメインサービスで行ってAccountに変換する。その後repositoryでAccountをstoreする
-//      - SignUpAccount, LoginAccountに分割するというのはありな気がする
-// - b. repositoryでWriteAccountをstoreする。repositoryの実体内でhash変換する。
-//      - これの問題点はpasswordのverify処理をrepositoryには書けないこと。
-//      - 必然的にdomain serviceにveriry, repositoryにhashといった具合にpassword logicがちらばる。
-
 #[derive(Clone, Debug)]
 pub struct SignUp {
     id: ID,
@@ -63,12 +57,6 @@ pub struct Login {
     email: Email,
     password: Password,
 }
-
-// Memo:
-//
-// AccountService::is_duplicated(signup)
-// AccountService::to_account(signup)
-// AccountService::verify(login, account)
 
 impl SignUp {
     pub fn new(
@@ -158,12 +146,6 @@ impl Password {
         let Password(password) = self;
         password.clone()
     }
-
-    // ここに持たせるのは微妙
-    // fn to_hash(&self, service: PasswordService) -> PasswordHash {
-    //   service.to_hash(password);
-    // }
-    //
 }
 
 #[derive(Clone, Debug)]
@@ -178,12 +160,4 @@ impl PasswordHash {
         let PasswordHash(hash) = self;
         hash.clone()
     }
-
-    // ここに持たせるのは微妙
-    // fn match(&self, password: Password, service: PasswordService) -> bool {
-    //   let hash = self.value;
-    //   service.verify(hash, password)
-    // }
-    //
-    // あるいはPasswordServiceをUsecaseから呼び出してしまったほうが健康的な気もする。
 }

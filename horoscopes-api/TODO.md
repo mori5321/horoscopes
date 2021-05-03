@@ -5,6 +5,7 @@
   - [x] repository層 用意(DI & usecase層は別タスクでOK)
   - [x] OnMemoryのRepository用意
   - [ ] DBに接続したRepository用意
+  - [ ] Organization/User概念を早いとこつくってしまう。
 
 - [z] Todo系の機能を一通りつくる(永続化層はMockでOK)
   - [x] List
@@ -29,13 +30,12 @@
 - [x] ロギング
 - [ ] Docker化
   - [x] 開発環境
-  - [ ] build環境
+  - [x] build環境
   - [ ] production環境
 - [ ] デプロイ
-- [ ] SqlXをdieselと比較検討する。
+- [x] SqlXをdieselと比較検討する。
 - [x] Rust Docを活用したい
 
-- [ ] Organization/User概念を早いとこつくってしまう。
 
 # Want
 - [ ] cli作成

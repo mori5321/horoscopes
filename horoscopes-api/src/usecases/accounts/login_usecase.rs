@@ -7,22 +7,30 @@ use crate::usecases::{
     Usecase,
 };
 
+use chrono::Duration;
 use hmac::{Hmac, NewMac};
 use jwt::{AlgorithmType, Header, SignWithKey, Token};
 use sha2::Sha256;
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
+use crate::usecases::common::ports::providers::TimeProvider;
+
 #[derive(Clone)]
 pub struct Deps {
     account_repository: Arc<dyn AccountRepository>,
+    time_provider: Arc<dyn TimeProvider>,
 }
 
 impl Deps {
     pub fn new(
         account_repository: Arc<dyn AccountRepository>,
+        time_provider: Arc<dyn TimeProvider>,
     ) -> Self {
-        Self { account_repository }
+        Self {
+            account_repository,
+            time_provider,
+        }
     }
 }
 
@@ -63,15 +71,22 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
                     "Account is not found".to_string(),
                 ));
             }
-            // JWT Access TokenとRefresh Tokenを返す
             Some(_account) => {
-                // - LoginとAccountをVerifyする。
+                // TODO: LoginとAccountをVerifyする。
                 //
                 let key: Hmac<Sha256> =
                     Hmac::new_varkey(b"horoscopes-secret").unwrap();
                 let header: Header = Default::default();
+
+                let now = self.deps.time_provider.now();
+                let offset = Duration::hours(1);
+                let expires_at = now + offset;
+                let expires_at_ts =
+                    expires_at.timestamp().to_string();
+
                 let mut claims = BTreeMap::new();
                 claims.insert("user_id", "xxxxxxxx0001");
+                claims.insert("expires_at", expires_at_ts.as_str());
                 // Memo
                 // - SecretKeyに何を使うのか
                 // - Tokenの型はどんなものなのか
@@ -86,8 +101,9 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
                 let signed_access_token =
                     access_token.sign_with_key(&key).unwrap();
 
-                // - Access TokenとRefresh Tokenを生成する。
-                // - Refresh Tokenを保存する。
+                // TODO: RefreshTokenを生成する
+                // TODO: Refresh Tokenを保存する
+                // TODO: Refresh Tokenを返す
                 return Ok(Output {
                     access_token: signed_access_token.into(),
                 });
