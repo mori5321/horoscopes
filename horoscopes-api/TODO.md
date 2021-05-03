@@ -7,6 +7,8 @@
   - [ ] DBに接続したRepository用意
   - [ ] Organization/User概念を早いとこつくってしまう。
 
+- [ ] AuthMiddlewareつくってしまう
+
 - [z] Todo系の機能を一通りつくる(永続化層はMockでOK)
   - [x] List
   - [x] Get

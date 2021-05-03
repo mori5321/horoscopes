@@ -1,5 +1,8 @@
-use crate::domain::entities::account::{self, Account, SignUp};
-use crate::domain::repositories::AccountRepository;
+use crate::domain::entities::account::SignUp;
+use crate::domain::entities::user::User;
+use crate::domain::repositories::{
+    AccountRepository, UserRepository,
+};
 use crate::domain::services::account_service::AccountService;
 use crate::usecases::common::ports::providers::IDProvider;
 use crate::usecases::{
@@ -12,6 +15,7 @@ use std::sync::Arc;
 pub struct Deps {
     account_repository: Arc<dyn AccountRepository>,
     account_service: Arc<dyn AccountService>,
+    user_repository: Arc<dyn UserRepository>,
     id_provider: Arc<dyn IDProvider>,
 }
 
@@ -19,11 +23,13 @@ impl Deps {
     pub fn new(
         account_repository: Arc<dyn AccountRepository>,
         account_service: Arc<dyn AccountService>,
+        user_repository: Arc<dyn UserRepository>,
         id_provider: Arc<dyn IDProvider>,
     ) -> Self {
         Self {
             account_repository,
             account_service,
+            user_repository,
             id_provider,
         }
     }
@@ -51,10 +57,11 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
     }
 
     fn run(&self, input: Input) -> Result<Output, UsecaseError> {
-        let id = self.deps.id_provider.generate();
+        let account_id = self.deps.id_provider.generate();
+        let user_id = self.deps.id_provider.generate();
 
         let signup = SignUp::new(
-            id,
+            account_id,
             input.email,
             input.password,
             input.password_confirmation,
@@ -73,7 +80,17 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
             ));
         }
 
-        let account = self.deps.account_service.from_signup(&signup);
+        // 空のUser作成する。
+        let empty_user = User::new(user_id, "".to_string());
+        self.deps
+            .user_repository
+            .store(empty_user.clone())
+            .expect("Failed to save user");
+
+        let account = self
+            .deps
+            .account_service
+            .from_signup(&signup, empty_user.id());
         self.deps.account_repository.store(account).unwrap();
 
         Ok(Output {})

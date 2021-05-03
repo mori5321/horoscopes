@@ -1,4 +1,5 @@
 use crate::domain::entities::account::{Account, Login, SignUp};
+use crate::domain::entities::user::ID as UserID;
 use crate::domain::repositories::AccountRepository;
 use crate::domain::services::account_service::AccountService;
 
@@ -19,7 +20,11 @@ impl AccountServiceImpl {
 const SALT: &[u8; 10] = b"horoscopes";
 
 impl AccountService for AccountServiceImpl {
-    fn from_signup(&self, signup: &SignUp) -> Account {
+    fn from_signup(
+        &self,
+        signup: &SignUp,
+        user_id: UserID,
+    ) -> Account {
         let config = Config::default();
         let salt = SALT;
         let password = signup.password().value();
@@ -28,7 +33,7 @@ impl AccountService for AccountServiceImpl {
             argon2::hash_encoded(&password.as_bytes(), salt, &config)
                 .expect("Failed to hash password.");
 
-        Account::from_signup(&signup, hash)
+        Account::from_signup(&signup, hash, user_id)
     }
 
     fn verify(&self, login: &Login, account: &Account) -> bool {
@@ -40,6 +45,7 @@ impl AccountService for AccountServiceImpl {
             &login_password.as_bytes(),
         );
 
+        // Error返したほうがよさそう
         match matched {
             Ok(boolean) => boolean,
             Err(_) => false,

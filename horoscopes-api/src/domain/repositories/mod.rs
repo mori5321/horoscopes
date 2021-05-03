@@ -1,5 +1,6 @@
 use crate::domain::entities::account;
 use crate::domain::entities::todo;
+use crate::domain::entities::user;
 
 pub trait TodoRepository: Send + Sync {
     fn list(&self) -> Vec<todo::Todo>;
@@ -14,4 +15,8 @@ pub trait AccountRepository: Send + Sync {
         email: account::Email,
     ) -> Option<account::Account>;
     fn store(&self, account: account::Account) -> Result<(), String>; // ErrorはStringで仮置
+}
+
+pub trait UserRepository: Send + Sync {
+    fn store(&self, user: user::User) -> Result<(), String>;
 }

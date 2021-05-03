@@ -1,8 +1,11 @@
+use crate::domain::entities::user::ID as UserID;
+
 #[derive(Clone, Debug)]
 pub struct Account {
     id: ID,
     email: Email,
     password_hash: PasswordHash,
+    user_id: UserID,
 }
 
 impl Account {
@@ -10,22 +13,26 @@ impl Account {
         id: String,
         email: String,
         password_hash: String,
+        user_id: String,
     ) -> Self {
         Self {
             id: ID::new(id),
             email: Email::new(email),
             password_hash: PasswordHash::new(password_hash),
+            user_id: UserID::new(user_id),
         }
     }
 
     pub fn from_signup(
         signup: &SignUp,
         password_hash: String,
+        user_id: UserID,
     ) -> Self {
         Account {
             id: signup.id.clone(),
             email: signup.email.clone(),
             password_hash: PasswordHash(password_hash),
+            user_id,
         }
     }
 
@@ -35,6 +42,10 @@ impl Account {
 
     pub fn password_hash(&self) -> PasswordHash {
         self.password_hash.clone()
+    }
+
+    pub fn user_id(&self) -> UserID {
+        self.user_id.clone()
     }
 }
 

@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use crate::adapters::infrastructure::{
     repositories::on_memory::account_repository::AccountRepositoryOnMemory,
-    // services::account_service::AccountServiceImpl
+    services::account_service::AccountServiceImpl
 };
 use crate::usecases::accounts::login_usecase::{self, LogInUsecase};
 use crate::usecases::Usecase;
@@ -15,10 +15,12 @@ use crate::filters::{
 use crate::adapters::infrastructure::providers::time_provider::UTCTimeProvider;
 
 pub fn filter() -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
-    let repository = Arc::new(AccountRepositoryOnMemory::new());
+    let account_repository = Arc::new(AccountRepositoryOnMemory::new());
+    let account_service = Arc::new(AccountServiceImpl::new(account_repository.clone()));
     let time_provider = Arc::new(UTCTimeProvider::new());
     let deps = login_usecase::Deps::new(
-        repository.clone(),
+        account_repository.clone(),
+        account_service.clone(), 
         time_provider.clone(),
     );
     let usecase = LogInUsecase::new(deps);

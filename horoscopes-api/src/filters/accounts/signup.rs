@@ -2,7 +2,10 @@ use warp::Filter;
 use serde::{Serialize, Deserialize};
 use std::sync::Arc;
 
-use crate::adapters::infrastructure::repositories::on_memory::account_repository::AccountRepositoryOnMemory;
+use crate::adapters::infrastructure::repositories::on_memory::{
+    account_repository::AccountRepositoryOnMemory,
+    user_repository::UserRepositoryOnMemory,
+};
 use crate::adapters::infrastructure::services::account_service::AccountServiceImpl;
 use crate::usecases::accounts::signup_usecase::{self, SignUpUsecase};
 
@@ -12,11 +15,13 @@ use crate::filters::errors::from_usecase_error;
 use crate::adapters::infrastructure::providers::id::ulid_provider;
 
 pub fn filter() -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
-    let repository = Arc::new(AccountRepositoryOnMemory::new());
+    let account_repository = Arc::new(AccountRepositoryOnMemory::new());
+    let user_repository = Arc::new(UserRepositoryOnMemory::new());
 
     let deps = signup_usecase::Deps::new(
-        repository.clone(),
-        Arc::new(AccountServiceImpl::new(repository.clone())),
+        account_repository.clone(),
+        Arc::new(AccountServiceImpl::new(account_repository.clone())),
+        user_repository.clone(),
         Arc::new(ulid_provider::ULIDProvider::new()),
     );
 

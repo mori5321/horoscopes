@@ -1,5 +1,4 @@
-use crate::domain::entities::todo;
-use crate::domain::entities::todo::Todo;
+use crate::domain::entities::todo::{self, Todo};
 use crate::domain::repositories::TodoRepository;
 
 use once_cell::sync::Lazy;
