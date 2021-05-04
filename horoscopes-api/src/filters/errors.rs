@@ -1,7 +1,9 @@
+use crate::usecases::common::errors::{
+    BusinessError, SystemError, UsecaseError, UsecaseErrorType,
+};
 use std::error::Error;
 use std::fmt;
 use warp::reject::Reject;
-use crate::usecases::common::errors::{UsecaseError, UsecaseErrorType, BusinessError, SystemError};
 
 #[derive(Debug)]
 pub struct AppError {
@@ -22,46 +24,36 @@ pub fn from_usecase_error(err: UsecaseError) -> AppError {
     match err.err_type() {
         UsecaseErrorType::BusinessError(ref business_error) => {
             match business_error {
-                BusinessError::NotFoundError => {
-                    AppError {
-                        child: err.clone(),
-                        err_type: AppErrorType::NotFound,
-                        message: err.message(),
-                    }
+                BusinessError::NotFoundError => AppError {
+                    child: err.clone(),
+                    err_type: AppErrorType::NotFound,
+                    message: err.message(),
                 },
-                BusinessError::ValidationError => {
-                    AppError {
-                        child: err.clone(),
-                        err_type: AppErrorType::UnprocessableEntity,
-                        message: err.message(),
-                    }
+                BusinessError::ValidationError => AppError {
+                    child: err.clone(),
+                    err_type: AppErrorType::UnprocessableEntity,
+                    message: err.message(),
                 },
-                BusinessError::DuplicatedError => {
-                    AppError {
-                        child: err.clone(),
-                        err_type: AppErrorType::BadRequest,
-                        message: err.message(),
-                    }
-                }
+                BusinessError::DuplicatedError => AppError {
+                    child: err.clone(),
+                    err_type: AppErrorType::BadRequest,
+                    message: err.message(),
+                },
             }
-        },
+        }
         UsecaseErrorType::SystemError(ref system_error) => {
             match system_error {
-                SystemError::UnknownError => {
-                    AppError { 
-                        child: err.clone(),
-                        err_type: AppErrorType::Internal,
-                        message: err.message(),
-                    }
-                }
+                SystemError::UnknownError => AppError {
+                    child: err.clone(),
+                    err_type: AppErrorType::Internal,
+                    message: err.message(),
+                },
             }
         }
     }
 }
 
-
 impl Reject for AppError {}
-
 
 impl Error for AppError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
@@ -74,4 +66,3 @@ impl fmt::Display for AppError {
         write!(f, "{}", self.message)
     }
 }
-

@@ -12,16 +12,21 @@ use crate::filters::{
     with_usecase,
     errors::from_usecase_error
 };
-use crate::adapters::infrastructure::providers::time_provider::UTCTimeProvider;
+use crate::adapters::infrastructure::providers::{
+    time_provider::UTCTimeProvider,
+    access_token_provider::AccessTokenProviderImpl,
+};
 
 pub fn filter() -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
     let account_repository = Arc::new(AccountRepositoryOnMemory::new());
     let account_service = Arc::new(AccountServiceImpl::new(account_repository.clone()));
     let time_provider = Arc::new(UTCTimeProvider::new());
+    let access_token_provider = Arc::new(AccessTokenProviderImpl::new());
     let deps = login_usecase::Deps::new(
         account_repository.clone(),
         account_service.clone(), 
         time_provider.clone(),
+        access_token_provider.clone(),
     );
     let usecase = LogInUsecase::new(deps);
 

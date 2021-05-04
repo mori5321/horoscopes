@@ -1,7 +1,7 @@
 use warp::Filter;
 use serde::{Serialize, Deserialize};
 use std::sync::Arc;
-use crate::filters::with_usecase;
+use crate::filters::{with_usecase, with_auth};
 use crate::usecases::todos::list_todos_usecase;
 use crate::adapters::infrastructure::repositories::on_memory::todo_repository;
 use crate::usecases::Usecase;
@@ -16,12 +16,14 @@ pub fn filter(
     
     warp::path::end()
         .and(warp::get())
+        .and(with_auth())
         .and(with_usecase(usecase))
         .and_then(handler) 
 }
 
-async fn handler(usecase: list_todos_usecase::ListTodosUsecase)
+async fn handler(user_id: String, usecase: list_todos_usecase::ListTodosUsecase)
     -> Result<impl warp::Reply, warp::Rejection> {
+    println!("UserID: {}", user_id);
     let input = list_todos_usecase::Input{};
     let output = usecase.run(input);
 
@@ -106,7 +108,7 @@ mod tests {
         let deps = list_todos_usecase::Deps::new(todo_repository);
         let usecase = list_todos_usecase::ListTodosUsecase::new(deps);
 
-        let rep = handler(usecase).await.unwrap();
+        let rep = handler("user-0001".to_string(), usecase).await.unwrap();
         let res = rep.into_response();
        
         let status_code = res.status();

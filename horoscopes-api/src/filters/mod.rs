@@ -9,8 +9,13 @@ use warp::Filter;
 use warp::http::StatusCode;
 use serde::{Serialize, Serializer};
 use serde::ser::SerializeStruct;
-use crate::usecases::Usecase;
+use crate::usecases::{
+    Usecase,
+    common::ports::providers::AccessTokenProvider,
+};
 use crate::filters::errors::AppErrorType;
+use crate::adapters::infrastructure::providers::access_token_provider::AccessTokenProviderImpl;
+
 
 pub fn filters(
 ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
@@ -83,3 +88,27 @@ fn with_usecase<U, Input, Output, Deps>(usecase: U)
     warp::any().map(move || usecase.clone())
 }
 
+
+fn with_auth() -> impl Filter<Extract = (String,), Error = warp::Rejection> + Clone {
+    warp::header::<String>("authorization")
+        .map(|authorization: String| {
+            authorization
+                .trim()
+                .strip_prefix("Bearer ")
+                .unwrap_or("")
+                .to_string()
+        })
+        .and_then(authorize)
+}
+
+async fn authorize(access_token: String) -> Result<String, warp::Rejection> {
+    let access_token_provider = AccessTokenProviderImpl::new(); 
+    match access_token_provider.verify(access_token) {
+        Ok(user_id) => Ok(user_id),
+        Err(text) => {
+            // TODO: Better Error Handling
+            println!("Err: {}", text);
+            Err(warp::reject::reject())
+       },
+   }
+}

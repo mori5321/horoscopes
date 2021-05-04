@@ -13,13 +13,16 @@ use sha2::Sha256;
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-use crate::usecases::common::ports::providers::TimeProvider;
+use crate::usecases::common::ports::providers::{
+    AccessTokenProvider, TimeProvider,
+};
 
 #[derive(Clone)]
 pub struct Deps {
     account_repository: Arc<dyn AccountRepository>,
     account_service: Arc<dyn AccountService>,
     time_provider: Arc<dyn TimeProvider>,
+    access_token_provider: Arc<dyn AccessTokenProvider>,
 }
 
 impl Deps {
@@ -27,11 +30,13 @@ impl Deps {
         account_repository: Arc<dyn AccountRepository>,
         account_service: Arc<dyn AccountService>,
         time_provider: Arc<dyn TimeProvider>,
+        access_token_provider: Arc<dyn AccessTokenProvider>,
     ) -> Self {
         Self {
             account_repository,
             account_service,
             time_provider,
+            access_token_provider,
         }
     }
 }
@@ -84,37 +89,20 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
                     ));
                 }
 
-                let key: Hmac<Sha256> =
-                    Hmac::new_varkey(b"horoscopes-secret").unwrap();
-                let header: Header = Default::default();
+                let issued_at = self.deps.time_provider.now();
+                let offset = Duration::minutes(1);
+                let expires_at = issued_at + offset;
 
-                let now = self.deps.time_provider.now();
-                let offset = Duration::hours(1);
-                let expires_at = now + offset;
-                let expires_at_ts =
-                    expires_at.timestamp().to_string();
+                let issued_at_ts = issued_at.timestamp() as u64;
+                let expires_at_ts = expires_at.timestamp() as u64;
+                let access_token =
+                    self.deps.access_token_provider.generate(
+                        account.user_id().value(),
+                        issued_at_ts,
+                        expires_at_ts,
+                    );
 
-                let mut claims = BTreeMap::new();
-                claims.insert("user_id", account.user_id().value());
-                claims.insert("expires_at", expires_at_ts);
-                // Memo
-                // - SecretKeyに何を使うのか
-                // - Tokenの型はどんなものなのか
-                //      - BtreeMapである必要性なさそう。独自型で共通化したいっちゃしたい。
-                //      - UserID, ExpiresAt, OrganizationID(?)
-
-                let access_token: Token<
-                    Header,
-                    BTreeMap<&str, String>,
-                    _,
-                > = Token::new(header, claims);
-                let signed_access_token =
-                    access_token.sign_with_key(&key).unwrap();
-
-                // Refresh Tokenの保存・生成・返却
-                return Ok(Output {
-                    access_token: signed_access_token.into(),
-                });
+                return Ok(Output { access_token });
             }
         }
     }
