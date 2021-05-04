@@ -38,6 +38,8 @@
 - [x] SqlXをdieselと比較検討する。
 - [x] Rust Docを活用したい
 
+- [ ] commit hookでcargo fmt(rustfmt)動かす。
+
 
 # Want
 - [ ] cli作成
