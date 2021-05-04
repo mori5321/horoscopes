@@ -10,10 +10,7 @@ pub struct DomainError {
 
 impl DomainError {
     pub fn new(err_type: DomainErrorType, message: String) -> Self {
-        Self {
-            err_type,
-            message,
-        }
+        Self { err_type, message }
     }
 
     pub fn err_type(&self) -> DomainErrorType {

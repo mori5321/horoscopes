@@ -1,5 +1,5 @@
-use ulid::Ulid;
 use crate::usecases::common::ports::providers::IDProvider;
+use ulid::Ulid;
 
 pub struct ULIDProvider {}
 
@@ -11,7 +11,7 @@ impl ULIDProvider {
 
 impl IDProvider for ULIDProvider {
     fn generate(&self) -> String {
-        let ulid  = Ulid::new();
+        let ulid = Ulid::new();
         ulid.to_string()
     }
 }

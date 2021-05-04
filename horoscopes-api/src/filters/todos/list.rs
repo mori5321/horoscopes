@@ -1,41 +1,44 @@
-use warp::Filter;
-use serde::{Serialize, Deserialize};
-use std::sync::Arc;
-use crate::filters::{with_usecase, with_auth};
-use crate::usecases::todos::list_todos_usecase;
 use crate::adapters::infrastructure::repositories::on_memory::todo_repository;
+use crate::filters::{with_auth, with_usecase};
+use crate::usecases::todos::list_todos_usecase;
 use crate::usecases::Usecase;
+use serde::{Deserialize, Serialize};
+use std::sync::Arc;
+use warp::Filter;
 
 pub fn filter(
-) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
-    let todo_repository = Arc::new(
-        todo_repository::TodoRepositoryOnMemory::new()
-    );
+) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
+       + Clone {
+    let todo_repository =
+        Arc::new(todo_repository::TodoRepositoryOnMemory::new());
     let deps = list_todos_usecase::Deps::new(todo_repository);
     let usecase = list_todos_usecase::ListTodosUsecase::new(deps);
-    
+
     warp::path::end()
         .and(warp::get())
         .and(with_auth())
         .and(with_usecase(usecase))
-        .and_then(handler) 
+        .and_then(handler)
 }
 
-async fn handler(user_id: String, usecase: list_todos_usecase::ListTodosUsecase)
-    -> Result<impl warp::Reply, warp::Rejection> {
+async fn handler(
+    user_id: String,
+    usecase: list_todos_usecase::ListTodosUsecase,
+) -> Result<impl warp::Reply, warp::Rejection> {
     println!("UserID: {}", user_id);
-    let input = list_todos_usecase::Input{};
+    let input = list_todos_usecase::Input {};
     let output = usecase.run(input);
 
     let response = from_dto(output.todos);
-    
-    Ok(warp::reply::json(&response))
-        .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::OK))
+
+    Ok(warp::reply::json(&response)).map(|rep| {
+        warp::reply::with_status(rep, warp::http::StatusCode::OK)
+    })
 }
 
 #[derive(Serialize, Deserialize)]
 struct Response {
-    data: Vec<TodoResponse>
+    data: Vec<TodoResponse>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -46,17 +49,16 @@ struct TodoResponse {
 }
 
 fn from_dto(todos_dto: list_todos_usecase::TodosDTO) -> Response {
-    let todos = todos_dto.into_iter().map(|dto| {
-        TodoResponse {
+    let todos = todos_dto
+        .into_iter()
+        .map(|dto| TodoResponse {
             id: dto.id,
             title: dto.title,
             is_done: dto.is_done,
-        }
-    }).collect();
-    
-    Response {
-        data: todos
-    }
+        })
+        .collect();
+
+    Response { data: todos }
 }
 
 #[cfg(test)]
@@ -76,7 +78,7 @@ mod tests {
     //         .path("/")
     //         .reply(&f)
     //         .await;
-    // 
+    //
     //     let json = json!({
     //             "data": [
     //                 {
@@ -86,7 +88,7 @@ mod tests {
     //                 },
     //             ]
     //         });
-    // 
+    //
     //     assert_eq!(value.status(), 200);
     //     assert_eq!(
     //         serde_json::from_slice::<serde_json::Value>(value.body()).unwrap(),
@@ -97,47 +99,60 @@ mod tests {
     #[tokio::test]
     async fn handler_returns_todos_json_response() {
         let todos = vec![
-            todo::Todo::new("ulid-0001".to_string(), "First Task".to_string(), false),
-            todo::Todo::new("ulid-0002".to_string(), "Second Task".to_string(), false),
-            todo::Todo::new("ulid-0003".to_string(), "Third Task".to_string(), false),
+            todo::Todo::new(
+                "ulid-0001".to_string(),
+                "First Task".to_string(),
+                false,
+            ),
+            todo::Todo::new(
+                "ulid-0002".to_string(),
+                "Second Task".to_string(),
+                false,
+            ),
+            todo::Todo::new(
+                "ulid-0003".to_string(),
+                "Third Task".to_string(),
+                false,
+            ),
         ];
 
-        let todo_repository = Arc::new(
-            TodoRepositoryForTest::new(todos)
-        );
+        let todo_repository =
+            Arc::new(TodoRepositoryForTest::new(todos));
         let deps = list_todos_usecase::Deps::new(todo_repository);
         let usecase = list_todos_usecase::ListTodosUsecase::new(deps);
 
-        let rep = handler("user-0001".to_string(), usecase).await.unwrap();
+        let rep =
+            handler("user-0001".to_string(), usecase).await.unwrap();
         let res = rep.into_response();
-       
+
         let status_code = res.status();
         let body = res.into_body();
         let bytes = hyper::body::to_bytes(body).await.unwrap();
-        
+
         let json = json!({
-                "data": [
-                    {
-                        "id": "ulid-0001",
-                        "title": "First Task",
-                        "is_done": false,
-                    },
-                    {
-                        "id": "ulid-0002",
-                        "title": "Second Task",
-                        "is_done": false,
-                    },
-                    {
-                        "id": "ulid-0003",
-                        "title": "Third Task",
-                        "is_done": false,
-                    }
-                ]
-            });
-        
+            "data": [
+                {
+                    "id": "ulid-0001",
+                    "title": "First Task",
+                    "is_done": false,
+                },
+                {
+                    "id": "ulid-0002",
+                    "title": "Second Task",
+                    "is_done": false,
+                },
+                {
+                    "id": "ulid-0003",
+                    "title": "Third Task",
+                    "is_done": false,
+                }
+            ]
+        });
+
         assert_eq!(status_code, warp::http::StatusCode::OK);
         assert_json_eq!(
-            serde_json::from_slice::<serde_json::Value>(&bytes).unwrap(),
+            serde_json::from_slice::<serde_json::Value>(&bytes)
+                .unwrap(),
             json
         );
     }

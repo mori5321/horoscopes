@@ -1,14 +1,14 @@
+use crate::domain::errors::{DomainError, DomainErrorType};
 use std::error::Error;
 use std::fmt;
-use crate::domain::errors::{DomainError, DomainErrorType};
-use std::sync::Arc;
 use std::fmt::Debug;
+use std::sync::Arc;
 
 #[derive(Debug, Clone)]
 pub struct UsecaseError {
     child: Option<Arc<dyn Error + Sync + Send>>,
     message: String,
-    err_type: UsecaseErrorType, 
+    err_type: UsecaseErrorType,
 }
 
 impl UsecaseError {
@@ -31,13 +31,13 @@ impl UsecaseError {
 
 pub fn from_domain_error(err: DomainError) -> UsecaseError {
     match err.err_type() {
-        DomainErrorType::ExceedMaxLengthError => {
-            UsecaseError {
-                child: Some(Arc::new(err.clone())),
-                message: err.message(),
-                err_type: UsecaseErrorType::BusinessError(BusinessError::ValidationError)
-            }
-        }
+        DomainErrorType::ExceedMaxLengthError => UsecaseError {
+            child: Some(Arc::new(err.clone())),
+            message: err.message(),
+            err_type: UsecaseErrorType::BusinessError(
+                BusinessError::ValidationError,
+            ),
+        },
     }
 }
 
@@ -51,12 +51,12 @@ pub enum UsecaseErrorType {
 pub enum BusinessError {
     ValidationError,
     DuplicatedError,
-    NotFoundError
+    NotFoundError,
 }
 
 #[derive(Debug, Clone)]
 pub enum SystemError {
-   UnknownError 
+    UnknownError,
 }
 
 impl Error for UsecaseError {
@@ -65,8 +65,8 @@ impl Error for UsecaseError {
             Some(err) => {
                 let e = Arc::as_ref(&err);
                 return Some(e.clone());
-            },
-            None => None
+            }
+            None => None,
         }
     }
 }

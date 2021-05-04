@@ -16,9 +16,9 @@ use crate::usecases::{
 use crate::filters::errors::AppErrorType;
 use crate::adapters::infrastructure::providers::access_token_provider::AccessTokenProviderImpl;
 
-
 pub fn filters(
-) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone
+{
     accounts::filters("accounts".to_string())
         .or(oauth2::filters("oauth2".to_string()))
         .or(todos::filters("todos".to_string()))
@@ -27,7 +27,7 @@ pub fn filters(
 
 struct ErrorResponse {
     code: StatusCode,
-    message: String
+    message: String,
 }
 
 impl Serialize for ErrorResponse {
@@ -35,61 +35,59 @@ impl Serialize for ErrorResponse {
     where
         S: Serializer,
     {
-        let mut s = serializer.serialize_struct("ErrorResponse", 2)?;
+        let mut s =
+            serializer.serialize_struct("ErrorResponse", 2)?;
         s.serialize_field("code", &self.code.as_u16())?;
         s.serialize_field("message", &self.message)?;
         s.end()
     }
 }
 
-async fn handle_rejection(err: warp::Rejection) -> Result<impl warp::Reply, warp::Rejection> {
+async fn handle_rejection(
+    err: warp::Rejection,
+) -> Result<impl warp::Reply, warp::Rejection> {
     let resp: ErrorResponse;
 
     if let Some(e) = err.find::<crate::filters::errors::AppError>() {
         resp = match e.err_type {
-            AppErrorType::NotFound => {
-                ErrorResponse {
-                    code: StatusCode::NOT_FOUND,
-                    message: e.message.clone(),
-                }
+            AppErrorType::NotFound => ErrorResponse {
+                code: StatusCode::NOT_FOUND,
+                message: e.message.clone(),
             },
-            AppErrorType::Internal => {
-                ErrorResponse {
-                    code: StatusCode::INTERNAL_SERVER_ERROR,
-                    message: e.message.clone(),
-                }
+            AppErrorType::Internal => ErrorResponse {
+                code: StatusCode::INTERNAL_SERVER_ERROR,
+                message: e.message.clone(),
             },
-            AppErrorType::UnprocessableEntity => {
-                ErrorResponse {
-                    code: StatusCode::UNPROCESSABLE_ENTITY,
-                    message: e.message.clone(),
-                }
+            AppErrorType::UnprocessableEntity => ErrorResponse {
+                code: StatusCode::UNPROCESSABLE_ENTITY,
+                message: e.message.clone(),
             },
-            AppErrorType::BadRequest => {
-                ErrorResponse {
-                    code: StatusCode::BAD_REQUEST,
-                    message: e.message.clone(),
-                }
-            }
+            AppErrorType::BadRequest => ErrorResponse {
+                code: StatusCode::BAD_REQUEST,
+                message: e.message.clone(),
+            },
         };
 
         let json = warp::reply::json(&resp);
-        return Ok(warp::reply::with_status(json, resp.code))
+        return Ok(warp::reply::with_status(json, resp.code));
     } else {
         // TODO: warp組み込みのエラーのResponseをJSONに変換したい。
-        return Err(err)
+        return Err(err);
     }
 }
 
-fn with_usecase<U, Input, Output, Deps>(usecase: U)
-    -> impl Filter<Extract = (U, ), Error = Infallible> + Clone
-    where U: Usecase<Input, Output, Deps> + Clone + Send
+fn with_usecase<U, Input, Output, Deps>(
+    usecase: U,
+) -> impl Filter<Extract = (U,), Error = Infallible> + Clone
+where
+    U: Usecase<Input, Output, Deps> + Clone + Send,
 {
     warp::any().map(move || usecase.clone())
 }
 
-
-fn with_auth() -> impl Filter<Extract = (String,), Error = warp::Rejection> + Clone {
+fn with_auth(
+) -> impl Filter<Extract = (String,), Error = warp::Rejection> + Clone
+{
     warp::header::<String>("authorization")
         .map(|authorization: String| {
             authorization
@@ -101,14 +99,16 @@ fn with_auth() -> impl Filter<Extract = (String,), Error = warp::Rejection> + Cl
         .and_then(authorize)
 }
 
-async fn authorize(access_token: String) -> Result<String, warp::Rejection> {
-    let access_token_provider = AccessTokenProviderImpl::new(); 
+async fn authorize(
+    access_token: String,
+) -> Result<String, warp::Rejection> {
+    let access_token_provider = AccessTokenProviderImpl::new();
     match access_token_provider.verify(access_token) {
         Ok(user_id) => Ok(user_id),
         Err(text) => {
             // TODO: Better Error Handling
             println!("Err: {}", text);
             Err(warp::reject::reject())
-       },
-   }
+        }
+    }
 }

@@ -1,26 +1,22 @@
-use crate::domain::repositories::TodoRepository;
 use crate::domain::entities::todo::Todo;
+use crate::domain::repositories::TodoRepository;
 use crate::usecases::Usecase;
 use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct Deps {
-    todo_repository: Arc<dyn TodoRepository>
+    todo_repository: Arc<dyn TodoRepository>,
 }
 
 impl Deps {
-    pub fn new(
-        todo_repository: Arc<dyn TodoRepository>,
-    ) -> Self {
-        Self {
-            todo_repository
-        }
+    pub fn new(todo_repository: Arc<dyn TodoRepository>) -> Self {
+        Self { todo_repository }
     }
 }
 
 pub struct Input {}
 pub struct Output {
-   pub todos: TodosDTO 
+    pub todos: TodosDTO,
 }
 
 pub type TodosDTO = Vec<TodoDTO>;
@@ -35,8 +31,8 @@ fn from_entity(todo: Todo) -> TodoDTO {
         id: todo.id().value(),
         title: todo.title().value(),
         is_done: todo.is_done().value(),
-    }    
-} 
+    }
+}
 
 #[derive(Clone)]
 pub struct ListTodosUsecase {
@@ -53,8 +49,6 @@ impl Usecase<Input, Output, Deps> for ListTodosUsecase {
 
         let todos_dto = todos.into_iter().map(from_entity).collect();
 
-        return Output {
-            todos: todos_dto,
-        }
+        return Output { todos: todos_dto };
     }
-} 
+}

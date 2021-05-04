@@ -10,14 +10,13 @@ use std::sync::Mutex;
 //
 
 pub struct TodoRepositoryForTest {
-    pub todos: Mutex<Vec<Todo>>
+    pub todos: Mutex<Vec<Todo>>,
 }
-
 
 impl TodoRepositoryForTest {
     pub fn new(todos: Vec<Todo>) -> Self {
         Self {
-            todos: Mutex::new(todos)
+            todos: Mutex::new(todos),
         }
     }
 }
@@ -36,15 +35,15 @@ impl TodoRepository for TodoRepositoryForTest {
     fn store(&self, todo: Todo) -> Result<(), String> {
         let mut todos = self.todos.lock().unwrap();
 
-        let opt_idx = todos.clone().into_iter().position(|t| {
-            t == todo
-        });
+        let opt_idx =
+            todos.clone().into_iter().position(|t| t == todo);
 
         match opt_idx {
             Some(idx) => {
-                todos.splice(idx..idx + 1, vec![todo].iter().cloned());
+                todos
+                    .splice(idx..idx + 1, vec![todo].iter().cloned());
                 Ok(())
-            },
+            }
             None => {
                 todos.push(todo.clone());
                 Ok(())
@@ -55,18 +54,15 @@ impl TodoRepository for TodoRepositoryForTest {
     fn remove(&self, id: todo::ID) -> Result<(), String> {
         let mut todos = self.todos.lock().unwrap();
 
-        let opt_idx = todos.clone().into_iter().position(|t| {
-            t.id() == id
-        });
+        let opt_idx =
+            todos.clone().into_iter().position(|t| t.id() == id);
 
         match opt_idx {
             Some(idx) => {
                 todos.remove(idx);
                 Ok(())
-            },
-            None => {
-                Err("Not Found Error".to_string())
             }
+            None => Err("Not Found Error".to_string()),
         }
     }
 }

@@ -1,26 +1,23 @@
-use crate::domain::repositories::TodoRepository;
 use crate::domain::entities::todo::Todo;
+use crate::domain::repositories::TodoRepository;
 use crate::domain::services::todo_service;
-use crate::usecases::Usecase;
 use crate::usecases::common::errors::{
-    UsecaseError,
-    SystemError,
-    UsecaseErrorType,
-    BusinessError
+    BusinessError, SystemError, UsecaseError, UsecaseErrorType,
 };
 use crate::usecases::common::ports::providers::IDProvider;
+use crate::usecases::Usecase;
 use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct Deps {
     todo_repository: Arc<dyn TodoRepository>,
-    id_provider: Arc<dyn IDProvider>
+    id_provider: Arc<dyn IDProvider>,
 }
 
 impl Deps {
     pub fn new(
         todo_repository: Arc<dyn TodoRepository>,
-        id_provider: Arc<dyn IDProvider>
+        id_provider: Arc<dyn IDProvider>,
     ) -> Self {
         Self {
             todo_repository,
@@ -30,24 +27,25 @@ impl Deps {
 }
 
 pub struct Input {
-    pub new_todo_dto: NewTodoDTO 
+    pub new_todo_dto: NewTodoDTO,
 }
 
 pub struct Output {
-    pub id: String
+    pub id: String,
 }
 
 pub struct NewTodoDTO {
-    pub title: String
+    pub title: String,
 }
-
 
 #[derive(Clone)]
 pub struct CreateTodoUsecase {
-    deps: Deps
+    deps: Deps,
 }
 
-impl Usecase<Input, Result<Output, UsecaseError>, Deps> for CreateTodoUsecase {
+impl Usecase<Input, Result<Output, UsecaseError>, Deps>
+    for CreateTodoUsecase
+{
     fn new(deps: Deps) -> Self {
         Self { deps }
     }
@@ -55,41 +53,34 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps> for CreateTodoUsecase {
     fn run(&self, input: Input) -> Result<Output, UsecaseError> {
         let id = self.deps.id_provider.generate();
 
-        let todo = Todo::new(
-            id.clone(),
-            input.new_todo_dto.title,
-            false
+        let todo =
+            Todo::new(id.clone(), input.new_todo_dto.title, false);
+
+        let service = todo_service::TodoService::new(
+            self.deps.todo_repository.clone(),
         );
 
-        let service = todo_service::TodoService::new(self.deps.todo_repository.clone());
-
         if service.is_duplicated(&todo) {
-            return Err(
-                UsecaseError::new(
-                    UsecaseErrorType::BusinessError(BusinessError::DuplicatedError),
-                    "Todo of this ID already exists".to_string(),
-                )
-            )
+            return Err(UsecaseError::new(
+                UsecaseErrorType::BusinessError(
+                    BusinessError::DuplicatedError,
+                ),
+                "Todo of this ID already exists".to_string(),
+            ));
         }
-            
+
         if let Err(e) = validator::validate_todo(&todo) {
-            return Err(e)
+            return Err(e);
         }
 
         match self.deps.todo_repository.store(todo) {
-            Ok(_) => {
-                Ok(Output {
-                    id 
-                })
-            },
-            Err(_) => {
-                Err(
-                    UsecaseError::new(
-                        UsecaseErrorType::SystemError(SystemError::UnknownError),
-                        "Temporary Error".to_string()
-                    )
-                )
-            }
+            Ok(_) => Ok(Output { id }),
+            Err(_) => Err(UsecaseError::new(
+                UsecaseErrorType::SystemError(
+                    SystemError::UnknownError,
+                ),
+                "Temporary Error".to_string(),
+            )),
         }
     }
 }
@@ -101,14 +92,17 @@ mod validator {
 
     pub fn validate_todo(todo: &Todo) -> Result<(), UsecaseError> {
         if todo.title().value().len() > TITLE_MAX_LENGTH {
-            return Err(
-                UsecaseError::new(
-                    UsecaseErrorType::BusinessError(BusinessError::ValidationError),
-                    format!("Title length must be less than {}", TITLE_MAX_LENGTH)
-                )
-            )
+            return Err(UsecaseError::new(
+                UsecaseErrorType::BusinessError(
+                    BusinessError::ValidationError,
+                ),
+                format!(
+                    "Title length must be less than {}",
+                    TITLE_MAX_LENGTH
+                ),
+            ));
         }
-        
-        return Ok(())
+
+        return Ok(());
     }
 }

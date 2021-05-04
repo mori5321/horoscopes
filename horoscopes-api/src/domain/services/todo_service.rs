@@ -1,18 +1,14 @@
-use std::sync::Arc;
 use crate::domain::entities::todo::Todo;
 use crate::domain::repositories::TodoRepository;
+use std::sync::Arc;
 
 pub struct TodoService {
-    todo_repository: Arc<dyn TodoRepository>
+    todo_repository: Arc<dyn TodoRepository>,
 }
 
 impl TodoService {
-    pub fn new(
-        todo_repository: Arc<dyn TodoRepository>
-    ) -> Self {
-        Self {
-            todo_repository
-        }
+    pub fn new(todo_repository: Arc<dyn TodoRepository>) -> Self {
+        Self { todo_repository }
     }
 
     pub fn is_duplicated(&self, todo: &Todo) -> bool {

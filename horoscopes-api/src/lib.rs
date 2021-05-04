@@ -2,6 +2,6 @@
 
 mod domain;
 mod adapters;
-mod usecases;
 mod clients;
 pub mod filters;
+mod usecases;

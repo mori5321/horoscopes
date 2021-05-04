@@ -1,6 +1,4 @@
-use warp::Filter;
 use crate::clients::oauth2::gen_google_oauth_client;
-use serde::Deserialize;
 use oauth2::{
     // AuthorizationCode,
     CsrfToken,
@@ -8,20 +6,27 @@ use oauth2::{
     Scope,
     // TokenResponse,
 };
+use serde::Deserialize;
+use warp::Filter;
 // use oauth2::reqwest::http_client;
 
 pub fn filters(
     prefix: String,
-) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
+) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
+       + Clone {
     let oauth2_prefix = warp::path(prefix);
     oauth2_prefix.and(auth().or(callback()))
 }
 
-fn auth() -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
+fn auth(
+) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
+       + Clone {
     warp::path("auth").and(warp::get()).and_then(auth_handler)
 }
 
-fn callback() -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
+fn callback(
+) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
+       + Clone {
     warp::path("callback")
         .and(warp::get())
         .and(warp::query::<CallbackQueries>())
@@ -36,11 +41,15 @@ fn callback() -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Reject
 async fn auth_handler() -> Result<impl warp::Reply, warp::Rejection> {
     let client = gen_google_oauth_client();
 
-    let (pkce_challenge, _pkce_verifier) = PkceCodeChallenge::new_random_sha256();
+    let (pkce_challenge, _pkce_verifier) =
+        PkceCodeChallenge::new_random_sha256();
 
     let (auth_url, _csrf_token) = client
         .authorize_url(CsrfToken::new_random)
-        .add_scope(Scope::new("https://www.googleapis.com/auth/userinfo.profile".to_string()))
+        .add_scope(Scope::new(
+            "https://www.googleapis.com/auth/userinfo.profile"
+                .to_string(),
+        ))
         .set_pkce_challenge(pkce_challenge)
         .url();
 
@@ -50,22 +59,36 @@ async fn auth_handler() -> Result<impl warp::Reply, warp::Rejection> {
     //     .map(|rep| warp::reply::with_header(rep, "Location", auth_url.to_string()))
 
     Ok(warp::reply::json(&"auth"))
-        .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::MOVED_PERMANENTLY))
-        .map(|rep| warp::reply::with_header(rep, "Location", auth_url.to_string()))
+        .map(|rep| {
+            warp::reply::with_status(
+                rep,
+                warp::http::StatusCode::MOVED_PERMANENTLY,
+            )
+        })
+        .map(|rep| {
+            warp::reply::with_header(
+                rep,
+                "Location",
+                auth_url.to_string(),
+            )
+        })
 }
 
 #[derive(Deserialize)]
 pub struct CallbackQueries {
     code: String,
-    state: String,    
+    state: String,
 }
 
-async fn callback_handler(q: CallbackQueries) -> Result<impl warp::Reply, warp::Rejection> {
+async fn callback_handler(
+    q: CallbackQueries,
+) -> Result<impl warp::Reply, warp::Rejection> {
     // pkce検証とかいうことをしないといけない。
     // In memory KVSだと複数サーバーにできないので、サーバー外のDBへの保存が必須な気がする。
     println!("{}", q.code);
     println!("{}", q.state);
 
-    Ok(warp::reply::json(&"callback"))
-        .map(|rep| warp::reply::with_status(rep, warp::http::StatusCode::OK))
+    Ok(warp::reply::json(&"callback")).map(|rep| {
+        warp::reply::with_status(rep, warp::http::StatusCode::OK)
+    })
 }
