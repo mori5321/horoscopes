@@ -7,7 +7,8 @@ use warp::reject::Reject;
 
 #[derive(Debug)]
 pub struct AppError {
-    child: UsecaseError,
+    // BoxとArcどっちがいいの?
+    child: Option<Box<dyn Error + Sync + Send>>,
     pub err_type: AppErrorType,
     pub message: String,
 }
@@ -25,17 +26,17 @@ pub fn from_usecase_error(err: UsecaseError) -> AppError {
         UsecaseErrorType::BusinessError(ref business_error) => {
             match business_error {
                 BusinessError::NotFoundError => AppError {
-                    child: err.clone(),
+                    child: Some(Box::new(err.clone())),
                     err_type: AppErrorType::NotFound,
                     message: err.message(),
                 },
                 BusinessError::ValidationError => AppError {
-                    child: err.clone(),
+                    child: Some(Box::new(err.clone())),
                     err_type: AppErrorType::UnprocessableEntity,
                     message: err.message(),
                 },
                 BusinessError::DuplicatedError => AppError {
-                    child: err.clone(),
+                    child: Some(Box::new(err.clone())),
                     err_type: AppErrorType::BadRequest,
                     message: err.message(),
                 },
@@ -44,7 +45,7 @@ pub fn from_usecase_error(err: UsecaseError) -> AppError {
         UsecaseErrorType::SystemError(ref system_error) => {
             match system_error {
                 SystemError::UnknownError => AppError {
-                    child: err.clone(),
+                    child: Some(Box::new(err.clone())),
                     err_type: AppErrorType::Internal,
                     message: err.message(),
                 },
@@ -57,7 +58,14 @@ impl Reject for AppError {}
 
 impl Error for AppError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
-        Some(&self.child)
+        // Some(&self.child)
+        match &self.child {
+            Some(err) => {
+                let e = err.as_ref();
+                return Some(e.clone());
+            }
+            None => Some(self),
+        }
     }
 }
 

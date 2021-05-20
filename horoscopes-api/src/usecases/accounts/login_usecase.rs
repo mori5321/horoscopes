@@ -7,10 +7,6 @@ use crate::usecases::{
 };
 
 use chrono::Duration;
-use hmac::{Hmac, NewMac};
-use jwt::{Header, SignWithKey, Token};
-use sha2::Sha256;
-use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use crate::usecases::common::ports::providers::{

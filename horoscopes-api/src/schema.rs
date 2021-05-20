@@ -3,6 +3,8 @@ table! {
         id -> Varchar,
         email -> Varchar,
         password_hash -> Varchar,
+        created_at -> Datetime,
+        updated_at -> Datetime,
     }
 }
 

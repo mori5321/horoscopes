@@ -24,12 +24,14 @@ pub fn filter(
     let time_provider = Arc::new(UTCTimeProvider::new());
     let access_token_provider =
         Arc::new(AccessTokenProviderImpl::new());
+    
     let deps = login_usecase::Deps::new(
         account_repository.clone(),
         account_service.clone(),
         time_provider.clone(),
         access_token_provider.clone(),
     );
+    
     let usecase = LogInUsecase::new(deps);
 
     warp::path("login")

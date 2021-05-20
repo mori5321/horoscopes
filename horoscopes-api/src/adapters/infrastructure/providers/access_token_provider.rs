@@ -76,12 +76,10 @@ impl AccessTokenProvider for AccessTokenProviderImpl {
 
                 match claims.private.get("user_id") {
                     Some(user_id) => Ok(user_id.to_string()),
-                    None => panic!("Access Token Invalid"),
+                    None => Err("Invalid Access Token".to_string()),
                 }
             }
-            Err(err) => {
-                panic!(err)
-            }
+            Err(_err) => Err("Invalid Access".to_string()),
         }
     }
 }
