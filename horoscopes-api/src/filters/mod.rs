@@ -1,6 +1,7 @@
 mod accounts;
 mod oauth2;
 mod todos;
+mod organizations;
 
 mod errors;
 
@@ -22,9 +23,10 @@ pub fn filters(
     app_state: Arc<AppState>,
 ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone
 {
-    accounts::filters("accounts".to_string(), app_state)
+    accounts::filters("accounts".to_string(), app_state.clone())
         .or(oauth2::filters("oauth2".to_string()))
         .or(todos::filters("todos".to_string()))
+        .or(organizations::filters("organizations".to_string(), app_state.clone()))
         .recover(handle_rejection)
 }
 
