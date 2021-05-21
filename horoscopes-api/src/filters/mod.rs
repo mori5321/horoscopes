@@ -15,7 +15,7 @@ use crate::usecases::{
     Usecase,
     common::ports::providers::AccessTokenProvider,
 };
-use crate::filters::errors::AppErrorType;
+use crate::filters::errors::{AppErrorType, AppError};
 use crate::adapters::infrastructure::providers::access_token_provider::AccessTokenProviderImpl;
 use crate::state::AppState;
 
@@ -71,6 +71,10 @@ async fn handle_rejection(
                 code: StatusCode::BAD_REQUEST,
                 message: e.message.clone(),
             },
+            AppErrorType::Unauthorized => ErrorResponse {
+                code: StatusCode::UNAUTHORIZED,
+                message: e.message.clone(),
+            }
         };
 
         let json = warp::reply::json(&resp);
@@ -111,9 +115,11 @@ async fn authorize(
     match access_token_provider.verify(access_token) {
         Ok(user_id) => Ok(user_id),
         Err(text) => {
-            // TODO: Better Error Handling
-            println!("Err: {}", text);
-            Err(warp::reject::reject())
+            let err = AppError::new(
+                AppErrorType::Unauthorized,
+                text
+            );
+            Err(warp::reject::custom(err))
         }
     }
 }

@@ -19,6 +19,17 @@ pub enum AppErrorType {
     NotFound,
     UnprocessableEntity,
     Internal,
+    Unauthorized,
+}
+
+impl AppError {
+    pub fn new(err_type: AppErrorType, message: String) -> Self {
+        Self {
+            child: None,
+            err_type,
+            message,
+        }
+    }
 }
 
 pub fn from_usecase_error(err: UsecaseError) -> AppError {

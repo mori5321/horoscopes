@@ -98,7 +98,7 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
         if let Err(err) =
             self.deps.account_repository.store(account.clone())
         {
-            // RepositoryErrorほしいよね
+            // TODO: RepositoryErrorほしいよね
             return Err(UsecaseError::new(
                 UsecaseErrorType::SystemError(
                     SystemError::UnknownError,
@@ -108,7 +108,7 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
         };
 
         let issued_at = self.deps.time_provider.now();
-        let offset = Duration::minutes(1);
+        let offset = Duration::minutes(60);
         let expires_at = issued_at + offset;
 
         let issued_at_ts = issued_at.timestamp() as u64;
@@ -131,7 +131,7 @@ mod validator {
     pub fn validate_signup(
         signup: &SignUp,
     ) -> Result<(), UsecaseError> {
-        // WANT: Errorまとめて返す仕組みほしいよな
+        // TODO: 複数のErrorまとめて返す仕組みほしいよな
         if signup.password().value().len() < PASSWORD_MIN_LENGTH {
             return Err(UsecaseError::new(
                 UsecaseErrorType::BusinessError(

@@ -86,7 +86,7 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
                 }
 
                 let issued_at = self.deps.time_provider.now();
-                let offset = Duration::minutes(1);
+                let offset = Duration::minutes(60);
                 let expires_at = issued_at + offset;
 
                 let issued_at_ts = issued_at.timestamp() as u64;

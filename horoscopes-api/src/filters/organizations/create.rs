@@ -3,17 +3,20 @@ use std::sync::Arc;
 use warp::Filter;
 
 use crate::state::AppState;
+use crate::filters::with_auth;
 
 pub fn filter(
     app_state: Arc<AppState>
 ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
     warp::path::end()
         .and(warp::post())
+        .and(with_auth())
         .and(warp::body::json())
         .and_then(handler)
 }
 
 async fn handler(
+    user_id: String,
     body: RequestBody,
 ) -> Result<impl warp::Reply, warp::Rejection> {
     let res_organization = OrganizationResponseBody {
