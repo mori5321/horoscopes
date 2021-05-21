@@ -4,11 +4,17 @@ use crate::domain::repositories::{
     AccountRepository, UserRepository,
 };
 use crate::domain::services::account_service::AccountService;
-use crate::usecases::common::ports::providers::IDProvider;
+use crate::usecases::common::ports::providers::{
+    AccessTokenProvider, IDProvider, TimeProvider,
+};
 use crate::usecases::{
-    common::errors::{BusinessError, UsecaseError, UsecaseErrorType},
+    common::errors::{
+        BusinessError, SystemError, UsecaseError, UsecaseErrorType,
+    },
     Usecase,
 };
+
+use chrono::Duration;
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -16,6 +22,8 @@ pub struct Deps {
     account_repository: Arc<dyn AccountRepository>,
     account_service: Arc<dyn AccountService>,
     id_provider: Arc<dyn IDProvider>,
+    time_provider: Arc<dyn TimeProvider>,
+    access_token_provider: Arc<dyn AccessTokenProvider>,
 }
 
 impl Deps {
@@ -23,11 +31,15 @@ impl Deps {
         account_repository: Arc<dyn AccountRepository>,
         account_service: Arc<dyn AccountService>,
         id_provider: Arc<dyn IDProvider>,
+        time_provider: Arc<dyn TimeProvider>,
+        access_token_provider: Arc<dyn AccessTokenProvider>,
     ) -> Self {
         Self {
             account_repository,
             account_service,
             id_provider,
+            time_provider,
+            access_token_provider,
         }
     }
 }
@@ -39,7 +51,9 @@ pub struct Input {
 }
 
 // AccessTokenとか返すべき
-pub struct Output {}
+pub struct Output {
+    pub access_token: String,
+}
 
 #[derive(Clone)]
 pub struct SignUpUsecase {
@@ -81,13 +95,31 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
 
         let account =
             self.deps.account_service.from_signup(&signup, user);
-        if let Err(err) = self.deps.account_repository.store(account)
+        if let Err(err) =
+            self.deps.account_repository.store(account.clone())
         {
             // RepositoryErrorほしいよね
-            return Err(err);
+            return Err(UsecaseError::new(
+                UsecaseErrorType::SystemError(
+                    SystemError::UnknownError,
+                ),
+                "UnknownError".to_string(),
+            ));
         };
 
-        Ok(Output {})
+        let issued_at = self.deps.time_provider.now();
+        let offset = Duration::minutes(1);
+        let expires_at = issued_at + offset;
+
+        let issued_at_ts = issued_at.timestamp() as u64;
+        let expires_at_ts = expires_at.timestamp() as u64;
+        let access_token = self.deps.access_token_provider.generate(
+            account.user().id().value(),
+            issued_at_ts,
+            expires_at_ts,
+        );
+
+        Ok(Output { access_token })
     }
 }
 

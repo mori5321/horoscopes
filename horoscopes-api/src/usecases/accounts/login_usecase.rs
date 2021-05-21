@@ -98,7 +98,7 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
                         expires_at_ts,
                     );
 
-                return Ok(Output { access_token });
+                Ok(Output { access_token })
             }
         }
     }
