@@ -93,7 +93,7 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
                 let expires_at_ts = expires_at.timestamp() as u64;
                 let access_token =
                     self.deps.access_token_provider.generate(
-                        account.user_id().value(),
+                        account.user().id().value(),
                         issued_at_ts,
                         expires_at_ts,
                     );

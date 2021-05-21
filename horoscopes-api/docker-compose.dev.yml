@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   app:
+    container_name: horoscopes-api
     build:
       context: .
       dockerfile: ./build/Dockerfile.Develop
@@ -15,9 +16,24 @@ services:
       - 3030:3030
     tty: true
     command:
-      cargo watch -x run
+      cargo watch -x run --ignore=.docker/**/* --ignore=Makefile --ignore=docker-compose.*.yml
     environment:
-      CARGO_BUILD_TARGET_DIR: /app/target
+      - CARGO_BUILD_TARGET_DIR
+      - DATABASE_URL
+  db: 
+    image: mysql:5.7
+    container_name: horoscopes-db
+    environment:
+      MYSQL_DATABASE: horoscopes_development
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - ./.docker/db/data:/var/lib/mysql
+      - ./.docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+    # restart: always
+    ports:
+      - 3306:3306
 volumes:
   rust_dev_target:
     external: true

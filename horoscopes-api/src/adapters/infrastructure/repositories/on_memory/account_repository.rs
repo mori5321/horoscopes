@@ -1,6 +1,6 @@
 use crate::adapters::infrastructure::services::account_service::AccountServiceImpl;
 use crate::domain::entities::account::{self, Account, SignUp};
-use crate::domain::entities::user::ID as UserID;
+use crate::domain::entities::user::User;
 use crate::domain::repositories::AccountRepository;
 use crate::domain::services::account_service::AccountService;
 
@@ -21,10 +21,8 @@ pub static ACCOUNTS_ON_MEMORY: Lazy<Mutex<Vec<Account>>> =
         let service = AccountServiceImpl::new(Arc::new(
             AccountRepositoryOnMemory::new(),
         ));
-        let account = service.from_signup(
-            &signup,
-            UserID::new("user-0001".to_string()),
-        );
+        let account = service
+            .from_signup(&signup, User::new("user-0001".to_string()));
 
         println!("Account: {:?}", account);
         let accounts = vec![account];

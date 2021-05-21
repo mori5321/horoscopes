@@ -15,7 +15,6 @@ use std::sync::Arc;
 pub struct Deps {
     account_repository: Arc<dyn AccountRepository>,
     account_service: Arc<dyn AccountService>,
-    user_repository: Arc<dyn UserRepository>,
     id_provider: Arc<dyn IDProvider>,
 }
 
@@ -23,13 +22,11 @@ impl Deps {
     pub fn new(
         account_repository: Arc<dyn AccountRepository>,
         account_service: Arc<dyn AccountService>,
-        user_repository: Arc<dyn UserRepository>,
         id_provider: Arc<dyn IDProvider>,
     ) -> Self {
         Self {
             account_repository,
             account_service,
-            user_repository,
             id_provider,
         }
     }
@@ -80,18 +77,15 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
             ));
         }
 
-        // 空のUser作成する。
-        let empty_user = User::new(user_id, "".to_string());
-        self.deps
-            .user_repository
-            .store(empty_user.clone())
-            .expect("Failed to save user");
+        let user = User::new(user_id);
 
-        let account = self
-            .deps
-            .account_service
-            .from_signup(&signup, empty_user.id());
-        self.deps.account_repository.store(account).unwrap();
+        let account =
+            self.deps.account_service.from_signup(&signup, user);
+        if let Err(err) = self.deps.account_repository.store(account)
+        {
+            // RepositoryErrorほしいよね
+            return Err(err);
+        };
 
         Ok(Output {})
     }

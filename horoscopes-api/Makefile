@@ -2,8 +2,20 @@
 up:
 	docker-compose -f docker-compose.dev.yml up
 
+down:
+	docker-compose -f docker-compose.dev.yml down
+
 sh:
-	docker-compose -f docker-compose.dev.yml bash
+	docker-compose -f docker-compose.dev.yml exec app bash
+
+sh.db:
+	docker-compose -f docker-compose.dev.yml exec db bash
+
+migration.run:
+	docker-compose -f docker-compoose.dev.yml exec app diesel_cli migration run
+
+migration.revert:
+	docker-compose -f docker-compose.dev.yml exec app diesel_cli migration revert
 
 # 仮置き
 build.release:

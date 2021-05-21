@@ -7,18 +7,21 @@ use crate::adapters::infrastructure::providers::{
     time_provider::UTCTimeProvider,
 };
 use crate::adapters::infrastructure::{
-    repositories::on_memory::account_repository::AccountRepositoryOnMemory,
+    repositories::persistence::account_repository::AccountRepositoryImpl,
     services::account_service::AccountServiceImpl,
 };
 use crate::filters::{errors::from_usecase_error, with_usecase};
 use crate::usecases::accounts::login_usecase::{self, LogInUsecase};
 use crate::usecases::Usecase;
+use crate::state::AppState;
+
 
 pub fn filter(
+    app_state: Arc<AppState>,
 ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
        + Clone {
     let account_repository =
-        Arc::new(AccountRepositoryOnMemory::new());
+        Arc::new(AccountRepositoryImpl::new(app_state.pool()));
     let account_service =
         Arc::new(AccountServiceImpl::new(account_repository.clone()));
     let time_provider = Arc::new(UTCTimeProvider::new());

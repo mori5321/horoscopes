@@ -4,6 +4,7 @@ mod todos;
 
 mod errors;
 
+use std::sync::Arc;
 use std::convert::Infallible;
 use warp::Filter;
 use warp::http::StatusCode;
@@ -15,11 +16,13 @@ use crate::usecases::{
 };
 use crate::filters::errors::AppErrorType;
 use crate::adapters::infrastructure::providers::access_token_provider::AccessTokenProviderImpl;
+use crate::state::AppState;
 
 pub fn filters(
+    app_state: Arc<AppState>,
 ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone
 {
-    accounts::filters("accounts".to_string())
+    accounts::filters("accounts".to_string(), app_state)
         .or(oauth2::filters("oauth2".to_string()))
         .or(todos::filters("todos".to_string()))
         .recover(handle_rejection)

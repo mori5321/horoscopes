@@ -2,9 +2,8 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use warp::Filter;
 
-use crate::adapters::infrastructure::repositories::on_memory::{
-    account_repository::AccountRepositoryOnMemory,
-    user_repository::UserRepositoryOnMemory,
+use crate::adapters::infrastructure::repositories::persistence::{
+    account_repository::AccountRepositoryImpl,
 };
 use crate::adapters::infrastructure::services::account_service::AccountServiceImpl;
 use crate::usecases::accounts::signup_usecase::{
@@ -16,17 +15,18 @@ use crate::filters::errors::from_usecase_error;
 use crate::filters::with_usecase;
 use crate::usecases::Usecase;
 
+use crate::state::AppState;
+
 pub fn filter(
+    app_state: Arc<AppState>
 ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
        + Clone {
     let account_repository =
-        Arc::new(AccountRepositoryOnMemory::new());
-    let user_repository = Arc::new(UserRepositoryOnMemory::new());
+        Arc::new(AccountRepositoryImpl::new(app_state.pool()));
 
     let deps = signup_usecase::Deps::new(
         account_repository.clone(),
         Arc::new(AccountServiceImpl::new(account_repository.clone())),
-        user_repository.clone(),
         Arc::new(ulid_provider::ULIDProvider::new()),
     );
 

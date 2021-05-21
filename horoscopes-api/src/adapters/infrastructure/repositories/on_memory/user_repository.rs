@@ -8,10 +8,7 @@ pub struct UserRepositoryOnMemory {}
 
 pub static USERS_ON_MEMORY: Lazy<Mutex<Vec<User>>> =
     Lazy::new(|| {
-        let users = vec![User::new(
-            "user-0001".to_string(),
-            "Mori".to_string(),
-        )];
+        let users = vec![User::new("user-0001".to_string())];
 
         Mutex::new(users)
     });
