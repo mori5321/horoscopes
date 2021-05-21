@@ -1,6 +1,7 @@
 pub mod common;
 
 pub mod accounts;
+pub mod organizations;
 pub mod todos;
 
 pub trait Usecase<Input, Output, Deps: ?Sized> {
