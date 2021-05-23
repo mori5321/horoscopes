@@ -16,7 +16,7 @@ impl Account {
         password_hash: String,
         user_id: String,
     ) -> Result<Self, DomainError> {
-        let email = Email::new(email).unwrap();
+        let email = Email::new(email)?;
 
         Ok(Self {
             id: ID::new(id),
@@ -83,7 +83,7 @@ impl SignUp {
         password: String,
         password_confirmation: String,
     ) -> Result<Self, DomainError> {
-        let email = Email::new(email).unwrap();
+        let email = Email::new(email)?;
 
         let account = Self {
             id: ID::new(id),
@@ -115,7 +115,7 @@ impl Login {
         email: String,
         password: String,
     ) -> Result<Self, DomainError> {
-        let email = Email::new(email).unwrap();
+        let email = Email::new(email)?;
 
         Ok(Self {
             email,
