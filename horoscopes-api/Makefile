@@ -8,14 +8,17 @@ down:
 sh:
 	docker-compose -f docker-compose.dev.yml exec app bash
 
-sh.db:
+db:
+	docker-compose -f docker-compose.dev.yml exec db mysql -u root -ppassword horoscopes_development
+
+db.sh:
 	docker-compose -f docker-compose.dev.yml exec db bash
 
 migration.run:
-	docker-compose -f docker-compoose.dev.yml exec app diesel_cli migration run
+	docker-compose -f docker-compose.dev.yml exec app diesel migration run
 
 migration.revert:
-	docker-compose -f docker-compose.dev.yml exec app diesel_cli migration revert
+	docker-compose -f docker-compose.dev.yml exec app diesel migration revert
 
 # 仮置き
 build.release:
