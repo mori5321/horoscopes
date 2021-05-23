@@ -1,6 +1,6 @@
 use horoscopes_api::filters;
 use horoscopes_api::state::AppState;
-use horoscopes_api::db::{gen_mysql_pool, MysqlPool};
+use horoscopes_api::db::gen_mysql_pool;
 
 use std::env;
 use warp::Filter;
