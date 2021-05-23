@@ -22,7 +22,7 @@ pub fn filter(
 }
 
 async fn handler(
-    user_id: String,
+    _user_id: String,
     usecase: list_todos_usecase::ListTodosUsecase,
 ) -> Result<impl warp::Reply, warp::Rejection> {
     let input = list_todos_usecase::Input {};

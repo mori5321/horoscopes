@@ -1,4 +1,4 @@
-use crate::domain::entities::user::{self, User};
+use crate::domain::entities::user::User;
 use crate::domain::repositories::UserRepository;
 
 use once_cell::sync::Lazy;
@@ -13,11 +13,11 @@ pub static USERS_ON_MEMORY: Lazy<Mutex<Vec<User>>> =
         Mutex::new(users)
     });
 
-impl UserRepositoryOnMemory {
-    pub fn new() -> Self {
-        Self {}
-    }
-}
+// impl UserRepositoryOnMemory {
+//     pub fn new() -> Self {
+//         Self {}
+//     }
+// }
 
 impl UserRepository for UserRepositoryOnMemory {
     fn store(&self, user: User) -> Result<(), String> {

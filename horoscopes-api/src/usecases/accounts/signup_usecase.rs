@@ -1,15 +1,14 @@
 use crate::domain::entities::account::SignUp;
 use crate::domain::entities::user::User;
-use crate::domain::repositories::{
-    AccountRepository, UserRepository,
-};
+use crate::domain::repositories::AccountRepository;
 use crate::domain::services::account_service::AccountService;
 use crate::usecases::common::ports::providers::{
     AccessTokenProvider, IDProvider, TimeProvider,
 };
 use crate::usecases::{
     common::errors::{
-        BusinessError, SystemError, UsecaseError, UsecaseErrorType,
+        from_domain_error, BusinessError, SystemError, UsecaseError,
+        UsecaseErrorType,
     },
     Usecase,
 };
@@ -71,12 +70,15 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
         let account_id = self.deps.id_provider.generate();
         let user_id = self.deps.id_provider.generate();
 
-        let signup = SignUp::new(
+        let res_signup = SignUp::new(
             account_id,
             input.email,
             input.password,
             input.password_confirmation,
         );
+
+        let signup =
+            res_signup.map_err(|err| from_domain_error(err))?;
 
         if let Err(err) = validator::validate_signup(&signup) {
             return Err(err);
@@ -95,7 +97,7 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
 
         let account =
             self.deps.account_service.from_signup(&signup, user);
-        if let Err(err) =
+        if let Err(_err) =
             self.deps.account_repository.store(account.clone())
         {
             // TODO: RepositoryErrorほしいよね

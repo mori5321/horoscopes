@@ -16,7 +16,8 @@ pub static ACCOUNTS_ON_MEMORY: Lazy<Mutex<Vec<Account>>> =
             "moss@hoge.com".to_string(),
             "password".to_string(),
             "password".to_string(),
-        );
+        )
+        .unwrap();
 
         let service = AccountServiceImpl::new(Arc::new(
             AccountRepositoryOnMemory::new(),

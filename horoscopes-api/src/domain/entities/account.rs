@@ -1,5 +1,5 @@
 use super::user::User;
-use crate::domain::entities::user::ID as UserID;
+use crate::domain::errors::{DomainError, DomainErrorType};
 
 #[derive(Clone, Debug)]
 pub struct Account {
@@ -15,13 +15,15 @@ impl Account {
         email: String,
         password_hash: String,
         user_id: String,
-    ) -> Self {
-        Self {
+    ) -> Result<Self, DomainError> {
+        let email = Email::new(email).unwrap();
+
+        Ok(Self {
             id: ID::new(id),
-            email: Email::new(email),
+            email,
             password_hash: PasswordHash::new(password_hash),
             user: User::new(user_id),
-        }
+        })
     }
 
     pub fn from_signup(
@@ -80,17 +82,19 @@ impl SignUp {
         email: String,
         password: String,
         password_confirmation: String,
-    ) -> Self {
+    ) -> Result<Self, DomainError> {
+        let email = Email::new(email).unwrap();
+
         let account = Self {
             id: ID::new(id),
-            email: Email::new(email),
+            email,
             password: Password::new(password),
             password_confirmation: Password::new(
                 password_confirmation,
             ),
         };
 
-        return account;
+        Ok(account)
     }
 
     pub fn email(&self) -> Email {
@@ -107,11 +111,16 @@ impl SignUp {
 }
 
 impl Login {
-    pub fn new(email: String, password: String) -> Self {
-        Self {
-            email: Email::new(email),
+    pub fn new(
+        email: String,
+        password: String,
+    ) -> Result<Self, DomainError> {
+        let email = Email::new(email).unwrap();
+
+        Ok(Self {
+            email,
             password: Password::new(password),
-        }
+        })
     }
 
     pub fn email(&self) -> Email {
@@ -140,13 +149,22 @@ impl ID {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Email(String);
 
-impl Email {
-    fn new(email: String) -> Self {
-        Email(email)
-    }
+const EMAIL_MAX_LENGTH: usize = 256;
 
-    pub fn from_string(s: String) -> Self {
-        Self::new(s)
+impl Email {
+    fn new(email: String) -> Result<Self, DomainError> {
+        if email.len() > EMAIL_MAX_LENGTH {
+            let error = DomainError::new(
+                DomainErrorType::ExceedMaxLengthError,
+                format!(
+                    "Email length should be less than {}",
+                    EMAIL_MAX_LENGTH
+                ),
+            );
+            return Err(error);
+        }
+
+        Ok(Email(email))
     }
 
     pub fn value(&self) -> String {

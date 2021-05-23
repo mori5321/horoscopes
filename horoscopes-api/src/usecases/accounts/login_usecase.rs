@@ -2,7 +2,10 @@ use crate::domain::entities::account::Login;
 use crate::domain::repositories::AccountRepository;
 use crate::domain::services::account_service::AccountService;
 use crate::usecases::{
-    common::errors::{BusinessError, UsecaseError, UsecaseErrorType},
+    common::errors::{
+        from_domain_error, BusinessError, UsecaseError,
+        UsecaseErrorType,
+    },
     Usecase,
 };
 
@@ -59,7 +62,10 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
     }
 
     fn run(&self, input: Input) -> Result<Output, UsecaseError> {
-        let login = Login::new(input.email, input.password);
+        let res_login = Login::new(input.email, input.password);
+
+        let login =
+            res_login.map_err(|err| from_domain_error(err))?;
 
         let res_account =
             self.deps.account_repository.find_by_email(login.email());

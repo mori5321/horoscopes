@@ -2,9 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use warp::Filter;
 
-use crate::adapters::infrastructure::repositories::persistence::{
-    account_repository::AccountRepositoryImpl,
-};
+use crate::adapters::infrastructure::repositories::persistence::account_repository::AccountRepositoryImpl;
 use crate::adapters::infrastructure::services::account_service::AccountServiceImpl;
 use crate::adapters::infrastructure::providers::time_provider::UTCTimeProvider;
 use crate::adapters::infrastructure::providers::{
@@ -35,7 +33,7 @@ pub fn filter(
 
     let deps = signup_usecase::Deps::new(
         account_repository.clone(),
-        Arc::new(AccountServiceImpl::new(account_repository.clone())),
+        account_service,
         ulid_provider,
         utc_time_provider,
         access_token_provider,

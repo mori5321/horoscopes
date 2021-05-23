@@ -1,5 +1,5 @@
 use crate::db::MysqlPool;
-use crate::domain::entities::{organization::Organization, user::ID};
+use crate::domain::entities::organization::Organization;
 use crate::domain::repositories::OrganizationRepository;
 use crate::models::{
     organizations::Organizations,
@@ -45,21 +45,22 @@ impl OrganizationRepository for OrganizationRepositoryImpl {
                 })
                 .collect();
 
-        let res = conn.transaction::<_, diesel::result::Error, _>(|| {
-            let res_insert_organization = diesel::insert_into(
-                organizations_schema::dsl::organizations,
-            )
-            .values(organization_model)
-            .execute(&conn)?;
+        let res =
+            conn.transaction::<_, diesel::result::Error, _>(|| {
+                diesel::insert_into(
+                    organizations_schema::dsl::organizations,
+                )
+                .values(organization_model)
+                .execute(&conn)?;
 
-            let res_insert_users_organizations = diesel::insert_into(
+                diesel::insert_into(
                 users_organizations_schema::dsl::users_organizations,
             )
             .values(users_organizations_models)
             .execute(&conn)?;
 
-            return Ok(());
-        });
+                return Ok(());
+            });
 
         if let Err(err) = res {
             // TODO: SystemErrorを返却する。Usecase層でロギングする。

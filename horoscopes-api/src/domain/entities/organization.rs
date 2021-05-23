@@ -35,7 +35,7 @@ impl Organization {
         self.user_ids.clone()
     }
 
-    pub fn add_user(&mut self, user_id: UserID) {
+    pub fn _add_user(&mut self, user_id: UserID) {
         self.user_ids.push(user_id)
     }
 }

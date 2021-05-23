@@ -53,12 +53,14 @@ impl AccountRepository for AccountRepositoryImpl {
 
         let user = res_user.unwrap();
 
+        // NOTE: unwarpでよいのか問題。
         let entity = account::Account::new(
             account.id,
             account.email,
             account.password_hash,
             user.id,
-        );
+        )
+        .unwrap();
 
         Some(entity)
     }
