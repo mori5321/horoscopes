@@ -113,7 +113,9 @@ async fn authorize(
 ) -> Result<String, warp::Rejection> {
     let access_token_provider = AccessTokenProviderImpl::new();
     match access_token_provider.verify(access_token) {
-        Ok(user_id) => Ok(user_id),
+        Ok(user_id) => {
+            Ok(user_id)
+        },
         Err(text) => {
             let err = AppError::new(
                 AppErrorType::Unauthorized,

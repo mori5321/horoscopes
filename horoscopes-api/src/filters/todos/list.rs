@@ -25,7 +25,6 @@ async fn handler(
     user_id: String,
     usecase: list_todos_usecase::ListTodosUsecase,
 ) -> Result<impl warp::Reply, warp::Rejection> {
-    println!("UserID: {}", user_id);
     let input = list_todos_usecase::Input {};
     let output = usecase.run(input);
 

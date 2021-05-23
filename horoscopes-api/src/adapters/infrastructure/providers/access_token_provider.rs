@@ -75,7 +75,20 @@ impl AccessTokenProvider for AccessTokenProviderImpl {
                 };
 
                 match claims.private.get("user_id") {
-                    Some(user_id) => Ok(user_id.to_string()),
+                    Some(user_id) => {
+                        // MEMO: if you chante serde_json::Value with to_string(),
+                        // the result includes extra \"(double-quote).
+                        // ex: "\"somehow\"".
+                        // Therefore, you should call as_str() before to_string().
+                        // ref: https://github.com/serde-rs/json/issues/367
+                        return match user_id.as_str() {
+                            Some(s) => Ok(s.to_string()),
+                            None => {
+                                Err("Invalid Access_token"
+                                    .to_string())
+                            }
+                        };
+                    }
                     None => Err("Invalid Access Token".to_string()),
                 }
             }

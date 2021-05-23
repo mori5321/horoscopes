@@ -1,6 +1,4 @@
-use crate::domain::entities::account;
-use crate::domain::entities::todo;
-use crate::domain::entities::user;
+use crate::domain::entities::{account, organization, todo, user};
 
 pub trait TodoRepository: Send + Sync {
     fn list(&self) -> Vec<todo::Todo>;
@@ -19,4 +17,11 @@ pub trait AccountRepository: Send + Sync {
 
 pub trait UserRepository: Send + Sync {
     fn store(&self, user: user::User) -> Result<(), String>;
+}
+
+pub trait OrganizationRepository: Send + Sync {
+    fn store(
+        &self,
+        organization: &organization::Organization,
+    ) -> Result<(), String>;
 }
