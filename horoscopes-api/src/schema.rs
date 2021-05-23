@@ -39,6 +39,7 @@ table! {
         id -> Varchar,
         text -> Varchar,
         diagnosis_id -> Varchar,
+        question_type -> Integer,
     }
 }
 

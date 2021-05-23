@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS questions (
   id VARCHAR(36) PRIMARY KEY,
   text VARCHAR(256) NOT NULL,
   diagnosis_id VARCHAR(36) NOT NULL,
+  question_type INT NOT NULL,
   FOREIGN KEY fk_diagnoses_id(diagnosis_id) REFERENCES diagnoses(id)
 );
 

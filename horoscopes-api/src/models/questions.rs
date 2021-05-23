@@ -6,4 +6,5 @@ pub struct Questions {
     pub id: String,
     pub text: String,
     pub diagnosis_id: String,
+    pub question_type: i32,
 }
