@@ -1,6 +1,7 @@
 pub mod common;
 
 pub mod accounts;
+pub mod diagnoses;
 pub mod organizations;
 pub mod todos;
 

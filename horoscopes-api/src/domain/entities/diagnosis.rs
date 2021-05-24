@@ -19,6 +19,18 @@ impl Diagnosis {
             organization_id: OrganizationID::new(organization_id),
         }
     }
+
+    pub fn id(&self) -> ID {
+        self.id.clone()
+    }
+
+    pub fn title(&self) -> Title {
+        self.title.clone()
+    }
+
+    pub fn organization_id(&self) -> OrganizationID {
+        self.organization_id.clone()
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]

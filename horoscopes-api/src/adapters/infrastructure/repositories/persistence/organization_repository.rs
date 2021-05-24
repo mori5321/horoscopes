@@ -28,7 +28,9 @@ impl OrganizationRepository for OrganizationRepositoryImpl {
         &self,
         organization: &Organization,
     ) -> Result<(), String> {
-        let conn = self.pool.get().unwrap();
+        let conn = self.pool.get().map_err(|err| {
+            "Failed to get database connection from pool.".to_string()
+        })?;
 
         let organization_model = Organizations {
             id: organization.id().value(),

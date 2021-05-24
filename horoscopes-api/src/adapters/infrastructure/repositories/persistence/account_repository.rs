@@ -24,7 +24,7 @@ impl AccountRepository for AccountRepositoryImpl {
         &self,
         email: account::Email,
     ) -> Option<account::Account> {
-        let conn = self.pool.get().unwrap();
+        let conn = self.pool.get().ok()?;
 
         let res_account = accounts_schema::dsl::accounts
             .filter(accounts_schema::email.eq(email.value()))
@@ -66,7 +66,9 @@ impl AccountRepository for AccountRepositoryImpl {
     }
 
     fn store(&self, account: account::Account) -> Result<(), String> {
-        let conn = self.pool.get().unwrap();
+        let conn = self.pool.get().map_err(|err| {
+            "Failed to get database connection from pool.".to_string()
+        })?;
 
         let user_model = Users {
             id: account.user().id().value(),
