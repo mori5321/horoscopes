@@ -12,17 +12,14 @@ use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct Deps {
-    id_provider: Arc<dyn IDProvider>,
     diagnosis_repository: Arc<dyn DiagnosisRepository>,
 }
 
 impl Deps {
     pub fn new(
-        id_provider: Arc<dyn IDProvider>,
         diagnosis_repository: Arc<dyn DiagnosisRepository>,
     ) -> Self {
         Self {
-            id_provider,
             diagnosis_repository,
         }
     }
@@ -30,16 +27,11 @@ impl Deps {
 
 pub struct Input {
     pub current_user_id: String,
-    pub diagnosis: NewDiagnosisDTO,
-}
-
-pub struct NewDiagnosisDTO {
-    pub title: String,
     pub organization_id: String,
 }
 
 pub struct Output {
-    pub diagnosis: DiagnosisDTO,
+    pub diagnoses: Vec<DiagnosisDTO>,
 }
 
 pub struct DiagnosisDTO {
@@ -57,44 +49,36 @@ fn from_entity(diagnosis: &Diagnosis) -> DiagnosisDTO {
 }
 
 #[derive(Clone)]
-pub struct CreateDiagnosisUsecase {
+pub struct ListDiagnosesUsecase {
     deps: Deps,
 }
 
 impl Usecase<Input, Result<Output, UsecaseError>, Deps>
-    for CreateDiagnosisUsecase
+    for ListDiagnosesUsecase
 {
     fn new(deps: Deps) -> Self {
         Self { deps }
     }
+
     fn run(&self, input: Input) -> Result<Output, UsecaseError> {
-        // TODO: organizationへの所属をチェック
+        // TODO: 指定したOrganizationのDiagnosisのみを返却する。
+        // TODO: UserがOrganizationに所属しているかCheckする。
+        let opt_diagnoses = self.deps.diagnosis_repository.list();
 
-        let diagnosis_id = self.deps.id_provider.generate();
-
-        let new_diagnosis = Diagnosis::new(
-            diagnosis_id,
-            input.diagnosis.title,
-            input.diagnosis.organization_id,
-        );
-
-        let res_diagnosis =
-            self.deps.diagnosis_repository.store(&new_diagnosis);
-
-        match res_diagnosis {
-            Err(err) => {
-                let error = UsecaseError::new(
-                    UsecaseErrorType::SystemError(
-                        SystemError::UnknownError,
-                    ),
-                    err,
-                );
-                Err(error)
-            }
-            Ok(_) => {
-                let diagnosis_dto = from_entity(&new_diagnosis);
+        match opt_diagnoses {
+            None => Err(UsecaseError::new(
+                UsecaseErrorType::BusinessError(
+                    BusinessError::NotFoundError,
+                ),
+                "Diagnoses Not Found".to_string(),
+            )),
+            Some(diagnoses) => {
+                let diagnoses_dto = diagnoses
+                    .into_iter()
+                    .map(|diagnosis| from_entity(&diagnosis))
+                    .collect();
                 Ok(Output {
-                    diagnosis: diagnosis_dto,
+                    diagnoses: diagnoses_dto,
                 })
             }
         }
