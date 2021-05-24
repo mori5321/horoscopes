@@ -1,7 +1,7 @@
 use crate::db::MysqlPool;
-use crate::domain::entities::diagnosis;
+use crate::domain::entities::diagnosis::{self, Diagnosis};
 use crate::domain::repositories::DiagnosisRepository;
-use crate::models::diagnoses::Diagnoses;
+use crate::models::diagnoses::{to_entity, Diagnoses};
 use crate::schema::diagnoses as diagnoses_schema;
 
 use diesel::prelude::*;
@@ -18,13 +18,28 @@ impl DiagnosisRepositoryImpl {
 }
 
 impl DiagnosisRepository for DiagnosisRepositoryImpl {
+    fn list(&self) -> Option<Vec<Diagnosis>> {
+        let conn = self.pool.get().unwrap();
+
+        let opt_diagnoses = diagnoses_schema::dsl::diagnoses
+            .load::<Diagnoses>(&conn)
+            .ok();
+
+        let opt_diagnoses_entities = opt_diagnoses.map(|diagnoses| {
+            return diagnoses
+                .into_iter()
+                .map(|diagnosis| to_entity(diagnosis))
+                .collect();
+        });
+
+        return opt_diagnoses_entities;
+    }
+
     fn store(
         &self,
         diagnosis: &diagnosis::Diagnosis,
     ) -> Result<(), String> {
-        let conn = self.pool.get().map_err(|err| {
-            "Failed to get database connection from pool.".to_string()
-        })?;
+        let conn = self.pool.get().unwrap();
 
         let diagnosis_model = Diagnoses {
             id: diagnosis.id().value(),

@@ -29,6 +29,8 @@ pub trait OrganizationRepository: Send + Sync {
 }
 
 pub trait DiagnosisRepository: Send + Sync {
+    fn list(&self) -> Option<Vec<diagnosis::Diagnosis>>;
+    // fn find(&self) -> Option<diagnosis::Diagnosis>;
     fn store(
         &self,
         diagnosis: &diagnosis::Diagnosis,
