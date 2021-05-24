@@ -18,21 +18,19 @@ impl DiagnosisRepositoryImpl {
 }
 
 impl DiagnosisRepository for DiagnosisRepositoryImpl {
-    fn list(&self) -> Option<Vec<Diagnosis>> {
+    fn list(&self) -> Vec<Diagnosis> {
         let conn = self.pool.get().unwrap();
 
-        let opt_diagnoses = diagnoses_schema::dsl::diagnoses
+        let diagnoses = diagnoses_schema::dsl::diagnoses
             .load::<Diagnoses>(&conn)
-            .ok();
+            .unwrap();
 
-        let opt_diagnoses_entities = opt_diagnoses.map(|diagnoses| {
-            return diagnoses
-                .into_iter()
-                .map(|diagnosis| to_entity(diagnosis))
-                .collect();
-        });
+        let diagnoses_entities = diagnoses
+            .into_iter()
+            .map(|diagnosis| to_entity(diagnosis))
+            .collect();
 
-        return opt_diagnoses_entities;
+        return diagnoses_entities;
     }
 
     fn store(

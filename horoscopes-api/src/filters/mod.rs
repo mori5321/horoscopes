@@ -2,6 +2,7 @@ mod accounts;
 mod oauth2;
 mod todos;
 mod organizations;
+mod diagnoses;
 
 mod errors;
 
@@ -27,6 +28,7 @@ pub fn filters(
         .or(oauth2::filters("oauth2".to_string()))
         .or(todos::filters("todos".to_string()))
         .or(organizations::filters("organizations".to_string(), app_state.clone()))
+        .or(diagnoses::filters("diagnoses".to_string(), app_state.clone()))
         .recover(handle_rejection)
 }
 

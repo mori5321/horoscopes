@@ -63,24 +63,15 @@ impl Usecase<Input, Result<Output, UsecaseError>, Deps>
     fn run(&self, input: Input) -> Result<Output, UsecaseError> {
         // TODO: 指定したOrganizationのDiagnosisのみを返却する。
         // TODO: UserがOrganizationに所属しているかCheckする。
-        let opt_diagnoses = self.deps.diagnosis_repository.list();
+        let diagnoses = self.deps.diagnosis_repository.list();
 
-        match opt_diagnoses {
-            None => Err(UsecaseError::new(
-                UsecaseErrorType::BusinessError(
-                    BusinessError::NotFoundError,
-                ),
-                "Diagnoses Not Found".to_string(),
-            )),
-            Some(diagnoses) => {
-                let diagnoses_dto = diagnoses
-                    .into_iter()
-                    .map(|diagnosis| from_entity(&diagnosis))
-                    .collect();
-                Ok(Output {
-                    diagnoses: diagnoses_dto,
-                })
-            }
-        }
+        let diagnoses_dto = diagnoses
+            .into_iter()
+            .map(|diagnosis| from_entity(&diagnosis))
+            .collect();
+
+        Ok(Output {
+            diagnoses: diagnoses_dto,
+        })
     }
 }
