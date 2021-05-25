@@ -9,7 +9,9 @@ pub fn filters(
     app_state: Arc<AppState>,
 ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
        + Clone {
-    let diagnoses_prefix = warp::path(prefix).and(warp::path::param);
+    // 及第点として prefixを末端のFilterに渡してそこで処理すればよいのでは...?
+    // あるいはRoutingレイヤーは1箇所にまとめるべきだったか...?
+    let diagnoses_prefix = warp::path(prefix);
     diagnoses_prefix.and(list::filter(app_state.clone()))
 }
 
