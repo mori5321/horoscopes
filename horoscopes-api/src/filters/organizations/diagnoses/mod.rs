@@ -9,6 +9,10 @@ pub fn filters(
     app_state: Arc<AppState>,
 ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
        + Clone {
-    let diagnoses_prefix = warp::path(prefix);
+    let diagnoses_prefix = warp::path(prefix).and(warp::path::param);
     diagnoses_prefix.and(list::filter(app_state.clone()))
 }
+
+// Memo: How to define Nested Filter.
+// https://github.com/seanmonstar/warp/issues/744
+// https://github.com/seanmonstar/warp/pull/693/files
