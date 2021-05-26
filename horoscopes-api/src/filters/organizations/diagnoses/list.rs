@@ -10,6 +10,7 @@ use crate::usecases::diagnoses::list_diagnoses_usecase::{self, ListDiagnosesUsec
 use crate::adapters::infrastructure::repositories::persistence::diagnosis_repository::DiagnosisRepositoryImpl;
 
 pub fn filter(
+    path: String,
     app_state: Arc<AppState>,
 ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
        + Clone {
@@ -18,8 +19,9 @@ pub fn filter(
     let deps = list_diagnoses_usecase::Deps::new(diagnosis_repository);
     let usecase = ListDiagnosesUsecase::new(deps);
 
-    // warp::path::param::<String>()
-    warp::path::end()
+    warp::path::param::<String>()
+        .and(warp::path::path(path))
+        .and(warp::path::end())
         .and(warp::get())
         .and(with_auth())
         .and(with_usecase(usecase))
@@ -27,17 +29,15 @@ pub fn filter(
 }
 
 async fn handler(
-    // organization_id: String,
+    organization_id: String,
     user_id: String,
     usecase: ListDiagnosesUsecase,
 ) -> Result<impl warp::Reply, warp::Rejection> {
-    // TODO: QueryParameterでOrganizationIDを受け取る
-    
-    // println!("OrganizationID: {:?}", organization_id);
+    println!("OrganizationID: {:?}", organization_id);
 
     let input = list_diagnoses_usecase::Input {
         current_user_id: user_id,
-        organization_id: "01F6AEPVPCV1H0DVDS7D1QCFXW".to_string()
+        organization_id,
     };
     let result = usecase.run(input);
 

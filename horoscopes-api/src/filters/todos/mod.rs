@@ -7,11 +7,11 @@ mod list;
 mod update;
 
 pub fn filters(
-    prefix: String,
+    path: String,
 ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection>
        + Clone {
-    let todos_prefix = warp::path(prefix);
-    todos_prefix.and(
+    let todos_path = warp::path(path);
+    todos_path.and(
         list::filter()
             .or(get::filter())
             .or(create::filter())
