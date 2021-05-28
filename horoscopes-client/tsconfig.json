@@ -2,8 +2,8 @@
   "compilerOptions": {
     "typeRoots": ["types", "node_modules/@types"],
     "sourceMap": true,
-    "target": "es5",
-    "module": "CommonJS",
+    "target": "esnext",
+    "module": "esnext",
     "jsx": "react",
     "moduleResolution": "node",
     "lib": ["es2020", "dom"],
@@ -24,8 +24,7 @@
     "skipLibCheck": true,
     "strict": false,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true
+    "resolveJsonModule": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules"]

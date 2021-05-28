@@ -11,12 +11,16 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@linaria/webpack-loader": "^3.0.0-beta.4",
+    "@types/mini-css-extract-plugin": "^1.4.3",
     "@types/node": "^14.14.36",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
     "@types/webpack": "^5.0.0",
     "@types/webpack-dev-server": "^3.11.3",
+    "babel-loader": "^8.2.2",
     "cross-env": "^7.0.3",
+    "css-loader": "^5.2.6",
     "path": "^0.12.7",
     "ts-loader": "^8.0.18",
     "ts-node": "^9.1.1",
@@ -27,6 +31,13 @@
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
+    "@babel/core": "^7.14.3",
+    "@babel/preset-env": "^7.14.2",
+    "@linaria/babel-preset": "^3.0.0-beta.4",
+    "@linaria/core": "^3.0.0-beta.4",
+    "@linaria/react": "^3.0.0-beta.4",
+    "@linaria/shaker": "^3.0.0-beta.4",
+    "mini-css-extract-plugin": "^1.6.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   }
