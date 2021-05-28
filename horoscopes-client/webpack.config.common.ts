@@ -1,9 +1,10 @@
 import * as path from "path"
 import {Configuration} from "webpack";
-type WebpackConfig = Configuration & { devServer?: devServer.Configuration }
 import * as devServer from "webpack-dev-server";
 
-const commonConfig: WebpackConfig  = {
+export type WebpackConfig = Configuration & { devServer?: devServer.Configuration }
+
+export const commonConfig: WebpackConfig  = {
   mode: "development",
   devtool: "inline-source-map",
   context: path.join(__dirname, "src"),
@@ -25,5 +26,4 @@ const commonConfig: WebpackConfig  = {
   },
 }
 
-export { commonConfig, WebpackConfig };
 
