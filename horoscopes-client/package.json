@@ -37,8 +37,10 @@
     "@linaria/core": "^3.0.0-beta.4",
     "@linaria/react": "^3.0.0-beta.4",
     "@linaria/shaker": "^3.0.0-beta.4",
+    "history": "^5.0.0",
     "mini-css-extract-plugin": "^1.6.0",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "rocon": "^1.2.2"
   }
 }
