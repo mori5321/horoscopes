@@ -16,6 +16,7 @@
     "@types/node": "^14.14.36",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
+    "@types/recoil": "^0.0.9",
     "@types/webpack": "^5.0.0",
     "@types/webpack-dev-server": "^3.11.3",
     "babel-loader": "^8.2.2",
@@ -41,6 +42,7 @@
     "mini-css-extract-plugin": "^1.6.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "recoil": "^0.3.1",
     "rocon": "^1.2.2"
   }
 }

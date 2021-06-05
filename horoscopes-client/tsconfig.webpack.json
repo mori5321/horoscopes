@@ -27,6 +27,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["webpack.onfig.dev.ts", "webpack.config.common.ts"],
+  "include": ["webpack.config.dev.ts", "webpack.config.common.ts"],
   "exclude": ["node_modules"]
 }
