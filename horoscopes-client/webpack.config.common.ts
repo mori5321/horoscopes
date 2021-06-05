@@ -1,32 +1,34 @@
-import * as path from "path"
-import {Configuration} from "webpack";
-import * as devServer from "webpack-dev-server";
-import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import * as path from 'path';
+import { Configuration } from 'webpack';
+import * as devServer from 'webpack-dev-server';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
-export type WebpackConfig = Configuration & { devServer?: devServer.Configuration }
+export type WebpackConfig = Configuration & {
+  devServer?: devServer.Configuration;
+};
 
-export const commonConfig: WebpackConfig  = {
-  mode: "development",
-  devtool: "inline-source-map",
-  context: path.join(__dirname, "src"),
-  entry: "./index.tsx",
+export const commonConfig: WebpackConfig = {
+  mode: 'development',
+  devtool: 'inline-source-map',
+  context: path.join(__dirname, 'src'),
+  entry: './index.tsx',
   output: {
-    path: path.join(__dirname, "dist"),
-    filename: "bundle.js",
+    path: path.join(__dirname, 'dist'),
+    filename: 'bundle.js',
   },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         use: [
-          {loader: 'babel-loader'},
+          { loader: 'babel-loader' },
           {
             loader: '@linaria/webpack-loader',
             options: {
-              sourceMap: process.env.NODE_ENV !== 'production'
-            }
+              sourceMap: process.env.NODE_ENV !== 'production',
+            },
           },
-          { loader: 'ts-loader' }
+          { loader: 'ts-loader' },
         ],
       },
       {
@@ -36,25 +38,23 @@ export const commonConfig: WebpackConfig  = {
           {
             loader: 'css-loader',
             options: {
-              sourceMap: process.env.NODE_ENV !== 'production'
-            }
-          }
-        ]
-      }
+              sourceMap: process.env.NODE_ENV !== 'production',
+            },
+          },
+        ],
+      },
     ],
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".jsx"],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: {
-      "@": path.resolve(__dirname, "src"),
-      "assets": path.resolve(__dirname, "assets"),
-    }
+      '@': path.resolve(__dirname, 'src'),
+      assets: path.resolve(__dirname, 'assets'),
+    },
   },
   plugins: [
     new MiniCssExtractPlugin({
       filename: 'styles.css',
-    })
-  ]
-}
-
-
+    }),
+  ],
+};

@@ -1,6 +1,6 @@
-import { SignUpPage } from "@/components/pages/SignUp";
-import * as React from "react";
-import { Rocon, useRoutes } from "rocon/react";
+import { SignUpPage } from '@/components/pages/SignUp';
+import * as React from 'react';
+import { Rocon, useRoutes } from 'rocon/react';
 // import { TopPage } from "@/components/pages";
 
 // const toplevelRoutes = Rocon.Path()
