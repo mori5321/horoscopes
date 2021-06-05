@@ -22,6 +22,7 @@
     "babel-loader": "^8.2.2",
     "cross-env": "^7.0.3",
     "css-loader": "^5.2.6",
+    "husky": "^6.0.0",
     "path": "^0.12.7",
     "ts-loader": "^8.0.18",
     "ts-node": "^9.1.1",
@@ -44,5 +45,16 @@
     "react-dom": "^17.0.2",
     "recoil": "^0.3.1",
     "rocon": "^1.2.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts, tsx, js, jsx}": [
+      "eslint",
+      "prettier"
+    ]
   }
 }
