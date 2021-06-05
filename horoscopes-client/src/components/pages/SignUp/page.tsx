@@ -1,11 +1,8 @@
-import * as React from "react";
+import * as React from 'react';
+import { SignUpLayout } from './layout';
 
 const SignUpPage = () => {
-  return (
-    <div>
-      <h1>SignUp</h1>
-    </div>
-  );
+  return <SignUpLayout />;
 };
 
 export { SignUpPage };

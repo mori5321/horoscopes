@@ -11,39 +11,43 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@linaria/webpack-loader": "^3.0.0-beta.4",
-    "@types/mini-css-extract-plugin": "^1.4.3",
-    "@types/node": "^14.14.36",
-    "@types/react": "^17.0.3",
+    "@babel/core": "^7.14.0",
+    "@babel/preset-env": "^7.14.1",
+    "@babel/preset-react": "^7.13.13",
+    "@babel/preset-typescript": "^7.13.0",
+    "@linaria/webpack-loader": "^3.0.0-beta.3",
+    "@types/mini-css-extract-plugin": "^1.4.2",
+    "@types/node": "^15.0.2",
+    "@types/react": "^17.0.5",
     "@types/react-dom": "^17.0.3",
-    "@types/recoil": "^0.0.9",
-    "@types/webpack": "^5.0.0",
+    "@types/webpack": "^5.28.0",
     "@types/webpack-dev-server": "^3.11.3",
     "babel-loader": "^8.2.2",
+    "child_process": "^1.0.2",
     "cross-env": "^7.0.3",
-    "css-loader": "^5.2.6",
+    "css-loader": "^5.2.4",
+    "eslint": "^7.28.0",
+    "fs": "^0.0.1-security",
     "husky": "^6.0.0",
+    "lint-staged": "^11.0.0",
+    "mini-css-extract-plugin": "^1.6.0",
     "path": "^0.12.7",
-    "ts-loader": "^8.0.18",
+    "prettier": "^2.3.0",
+    "ts-loader": "^9.1.1",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.3",
-    "webpack": "^5.28.0",
+    "typescript": "^4.2.4",
+    "webpack": "5.28.0",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
-    "@babel/core": "^7.14.3",
-    "@babel/preset-env": "^7.14.2",
-    "@linaria/babel-preset": "^3.0.0-beta.4",
-    "@linaria/core": "^3.0.0-beta.4",
-    "@linaria/react": "^3.0.0-beta.4",
-    "@linaria/shaker": "^3.0.0-beta.4",
-    "history": "^5.0.0",
-    "mini-css-extract-plugin": "^1.6.0",
+    "@linaria/babel-preset": "^3.0.0-beta.3",
+    "@linaria/core": "^3.0.0-beta.3",
+    "@linaria/react": "^3.0.0-beta.3",
+    "@linaria/shaker": "^3.0.0-beta.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "recoil": "^0.3.1",
     "rocon": "^1.2.2"
   },
   "husky": {
@@ -53,8 +57,8 @@
   },
   "lint-staged": {
     "*.{ts, tsx, js, jsx}": [
-      "eslint",
-      "prettier"
+      "eslint --fix",
+      "prettier --write"
     ]
   }
 }
