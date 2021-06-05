@@ -2,7 +2,7 @@ import * as React from 'react';
 
 type Props = {};
 const SignUpLayout = (_props: Props) => {
-  const name = 'tom';
+  const name = 'Tom';
 
   return (
     <div>
