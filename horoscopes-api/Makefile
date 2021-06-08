@@ -9,7 +9,7 @@ sh:
 	docker-compose -f docker-compose.dev.yml exec app bash
 
 db:
-	docker-compose -f docker-compose.dev.yml exec db mysql -u root -ppassword horoscopes_development
+	docker-compose -f docker-compose.dev.yml exec db postgres -U root -d horoscopes-development
 
 db.sh:
 	docker-compose -f docker-compose.dev.yml exec db bash

@@ -4,8 +4,8 @@ table! {
         user_id -> Varchar,
         email -> Varchar,
         password_hash -> Varchar,
-        created_at -> Datetime,
-        updated_at -> Datetime,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
@@ -29,8 +29,8 @@ table! {
     organizations (id) {
         id -> Varchar,
         name -> Varchar,
-        created_at -> Datetime,
-        updated_at -> Datetime,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
@@ -39,7 +39,7 @@ table! {
         id -> Varchar,
         text -> Varchar,
         diagnosis_id -> Varchar,
-        question_type -> Integer,
+        question_type -> Int4,
     }
 }
 
@@ -54,8 +54,8 @@ table! {
 table! {
     users (id) {
         id -> Varchar,
-        created_at -> Datetime,
-        updated_at -> Datetime,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 

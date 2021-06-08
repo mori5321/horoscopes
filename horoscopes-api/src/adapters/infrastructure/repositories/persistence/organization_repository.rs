@@ -1,4 +1,4 @@
-use crate::db::MysqlPool;
+use crate::db::DbPool;
 use crate::domain::entities::organization::Organization;
 use crate::domain::repositories::OrganizationRepository;
 use crate::models::{
@@ -14,11 +14,11 @@ use diesel::prelude::*;
 use std::sync::Arc;
 
 pub struct OrganizationRepositoryImpl {
-    pool: Arc<MysqlPool>,
+    pool: Arc<DbPool>,
 }
 
 impl OrganizationRepositoryImpl {
-    pub fn new(pool: Arc<MysqlPool>) -> Self {
+    pub fn new(pool: Arc<DbPool>) -> Self {
         Self { pool }
     }
 }

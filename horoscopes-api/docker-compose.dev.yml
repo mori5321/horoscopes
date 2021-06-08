@@ -20,20 +20,32 @@ services:
     environment:
       - CARGO_BUILD_TARGET_DIR
       - DATABASE_URL
-  db: 
-    image: mysql:5.7
+  # db: 
+  #   image: mysql:5.7
+  #   container_name: horoscopes-db
+  #   environment:
+  #     MYSQL_DATABASE: horoscopes_development
+  #     MYSQL_USER: user
+  #     MYSQL_PASSWORD: password
+  #     MYSQL_ROOT_PASSWORD: password
+  #   volumes:
+  #     - ./.docker/db/data:/var/lib/mysql
+  #     - ./.docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+  #   # restart: always
+  #   ports:
+  #     - 3306:3306
+  db:
+    image: postgres:11
     container_name: horoscopes-db
     environment:
-      MYSQL_DATABASE: horoscopes_development
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: password
+      POSTGRES_USER: root
+      POSTGRES_DB: horoscopes_development
+      POSTGRES_PASSWORD: password
+    hostname: postgres
+    restart: always
     volumes:
-      - ./.docker/db/data:/var/lib/mysql
-      - ./.docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
-    # restart: always
-    ports:
-      - 3306:3306
+      - ./.docker/db/data:/var/lib/postgresql/data
+
 volumes:
   rust_dev_target:
     external: true

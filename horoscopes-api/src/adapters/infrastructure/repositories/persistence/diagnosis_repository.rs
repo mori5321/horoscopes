@@ -1,4 +1,4 @@
-use crate::db::MysqlPool;
+use crate::db::DbPool;
 use crate::domain::entities::diagnosis::{self, Diagnosis};
 use crate::domain::repositories::DiagnosisRepository;
 use crate::models::diagnoses::{to_entity, Diagnoses};
@@ -8,11 +8,11 @@ use diesel::prelude::*;
 use std::sync::Arc;
 
 pub struct DiagnosisRepositoryImpl {
-    pool: Arc<MysqlPool>,
+    pool: Arc<DbPool>,
 }
 
 impl DiagnosisRepositoryImpl {
-    pub fn new(pool: Arc<MysqlPool>) -> Self {
+    pub fn new(pool: Arc<DbPool>) -> Self {
         Self { pool }
     }
 }
