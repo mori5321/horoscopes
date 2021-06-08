@@ -1,5 +1,5 @@
 use crate::adapters::infrastructure::repositories::on_memory::todo_repository;
-use crate::filters::{with_auth, with_usecase};
+use crate::filters::with_usecase;
 use crate::usecases::todos::list_todos_usecase;
 use crate::usecases::Usecase;
 use serde::{Deserialize, Serialize};
@@ -16,13 +16,11 @@ pub fn filter(
 
     warp::path::end()
         .and(warp::get())
-        .and(with_auth())
         .and(with_usecase(usecase))
         .and_then(handler)
 }
 
 async fn handler(
-    _user_id: String,
     usecase: list_todos_usecase::ListTodosUsecase,
 ) -> Result<impl warp::Reply, warp::Rejection> {
     let input = list_todos_usecase::Input {};
