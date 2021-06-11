@@ -13,6 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.14.0",
+    "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.14.1",
     "@babel/preset-react": "^7.13.13",
     "@babel/preset-typescript": "^7.13.0",
@@ -48,8 +49,11 @@
     "@linaria/core": "^3.0.0-beta.3",
     "@linaria/react": "^3.0.0-beta.3",
     "@linaria/shaker": "^3.0.0-beta.3",
+    "ky": "^0.28.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "recoil": "^0.3.1",
+    "redaxios": "^0.4.1",
     "rocon": "^1.2.2"
   },
   "husky": {

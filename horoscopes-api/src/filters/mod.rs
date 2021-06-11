@@ -23,11 +23,19 @@ pub fn filters(
     app_state: Arc<AppState>,
 ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone
 {
+    // TODO: 環境変数からもらいたい。
+    // TODO: cors変数自体はstaticにしてもよさそう。
+    let cors = warp::cors()
+        .allow_origins(vec!["http://localhost:8080"]) 
+        .allow_headers(vec!["content-type", "accept"])
+        .allow_methods(vec!["GET", "POST", "PUT", "PATCH", "DELETE", "OPTION"]);
+
     accounts::filters("accounts".to_string(), app_state.clone())
         .or(oauth2::filters("oauth2".to_string()))
         .or(todos::filters("todos".to_string()))
         .or(organizations::filters("organizations".to_string(), app_state.clone()))
         .recover(handle_rejection)
+        .with(cors)
 }
 
 struct ErrorResponse {
@@ -81,6 +89,7 @@ async fn handle_rejection(
         return Ok(warp::reply::with_status(json, resp.code));
     } else {
         // TODO: warp組み込みのエラーのResponseをJSONに変換したい。
+        println!("Handle Rejection: {:?}", err);
         return Err(err);
     }
 }

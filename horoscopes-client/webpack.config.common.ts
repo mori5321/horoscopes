@@ -11,7 +11,7 @@ export const commonConfig: WebpackConfig = {
   mode: 'development',
   devtool: 'inline-source-map',
   context: path.join(__dirname, 'src'),
-  entry: './index.tsx',
+  entry: ['@babel/polyfill', './index.tsx'],
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js',
