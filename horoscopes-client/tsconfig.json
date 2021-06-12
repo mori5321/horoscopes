@@ -10,7 +10,9 @@
     "baseUrl": "./",
     "paths": {
       "@": ["./src"],
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "assets": ["./assets"],
+      "assets/*": ["./assets/*"]
     },
     "esModuleInterop": true,
     "allowJs": false,
@@ -27,6 +29,5 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules"]
 }
