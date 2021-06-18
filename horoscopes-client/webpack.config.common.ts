@@ -44,7 +44,7 @@ export const commonConfig: WebpackConfig = {
         ],
       },
       { 
-        test: /\.(png|jpg|gif|svg)$/,
+        test: /\.(png|jpg|gif|svg|jpeg)$/,
         loader: 'file-loader',
         options: {},
       }

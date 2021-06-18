@@ -27,6 +27,7 @@ export const globals = css`
       font-family: 'Roboto', 'Noto Sans JP', sans-serif;
       color: ${basicColorSet.textPrimary};
       background-color: ${basicColorSet.backgroundPrimary};
+      min-height: 100vh;
     }
   }
 `;

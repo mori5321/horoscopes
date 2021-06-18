@@ -21,7 +21,7 @@ pub static TODOS_ON_MEMORY: Lazy<Mutex<Vec<Todo>>> =
             ),
             Todo::new(
                 "id-0003".to_string(),
-                "Let's Sing!".to_string(),
+                "Let's Sing along with me!".to_string(),
                 false,
             ),
         ];
