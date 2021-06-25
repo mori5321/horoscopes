@@ -20,16 +20,16 @@ impl Diagnosis {
         }
     }
 
-    pub fn id(&self) -> ID {
-        self.id.clone()
+    pub fn id(&self) -> &ID {
+        &self.id
     }
 
-    pub fn title(&self) -> Title {
-        self.title.clone()
+    pub fn title(&self) -> &Title {
+        &self.title
     }
 
-    pub fn organization_id(&self) -> OrganizationID {
-        self.organization_id.clone()
+    pub fn organization_id(&self) -> &OrganizationID {
+        &self.organization_id
     }
 }
 

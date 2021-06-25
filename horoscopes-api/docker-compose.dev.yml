@@ -16,7 +16,7 @@ services:
       - 3030:3030
     tty: true
     command:
-      cargo watch -x check --ignore=.docker/**/* --ignore=Makefile --ignore=docker-compose.*.yml
+      cargo watch -x run --ignore=.docker/**/* --ignore=Makefile --ignore=docker-compose.*.yml
     environment:
       - CARGO_BUILD_TARGET_DIR
       - DATABASE_URL

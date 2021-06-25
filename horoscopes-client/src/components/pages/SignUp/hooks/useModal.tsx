@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from '@linaria/core';
+import { css, cx } from '@linaria/core';
 import { basicColorSet } from '@/consts/colors';
 
 type UseModal = () => {
@@ -13,10 +13,15 @@ const useModal: UseModal = () => {
   const [open, setOpen] = React.useState(false);
 
   const renderModal = (children: React.ReactChildren) => {
-    if (!open) return <></>;
-
     return (
-      <div className={modalContainerStyle} onClick={() => closeModal()}>
+      <div
+        className={cx(
+          modalContainerStyle,
+          modalAnimationBase,
+          open ? modalOpenAnimation : modalCloseAnimation
+        )}
+        onClick={() => closeModal()}
+      >
         <div
           className={modalInternalWrapperStyle}
           onClick={(e) => e.stopPropagation()}
@@ -45,6 +50,39 @@ const modalContainerStyle = css`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  opacity: 0;
+`;
+
+const modalAnimationBase = css`
+  visibility: hidden;
+  transition visibility 0.1s;
+`;
+
+const modalOpenAnimation = css`
+  visibility: visible;
+  opacity: 100;
+
+  animation: fadeIn 0.15s ease-out;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 100;
+    }
+  }
+`;
+
+const modalCloseAnimation = css`
+  animation: fadeOut 0.15s ease-out;
+  @keyframes fadeOut {
+    from {
+      opacity: 100;
+    }
+    to {
+      opacity: 0;
+    }
+  }
 `;
 
 const modalInternalWrapperStyle = css`
