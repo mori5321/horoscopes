@@ -2,15 +2,16 @@ import * as React from 'react';
 import { css, cx } from '@linaria/core';
 import { basicColorSet } from '@/consts/colors';
 
-type UseModal = () => {
+type UseModal = (initialOpen: boolean) => {
   openModal: () => void;
   closeModal: () => void;
   renderModal: (
     children: React.ReactChildren | React.ReactChild
   ) => React.ReactNode;
 };
-const useModal: UseModal = () => {
-  const [open, setOpen] = React.useState(false);
+const useModal: UseModal = (initialOpen = false) => {
+  // DEBUG用にTrueに
+  const [open, setOpen] = React.useState(initialOpen);
 
   const renderModal = (children: React.ReactChildren) => {
     return (

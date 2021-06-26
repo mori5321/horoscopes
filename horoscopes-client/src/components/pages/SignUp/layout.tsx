@@ -1,20 +1,30 @@
 import * as React from 'react';
 import { css } from '@linaria/core';
-import { basicColorSet } from '@/consts/colors';
-import { Spacer } from '@/components/common/layout/Spacer';
-import { SignUpModal } from './modules/SignUpModal';
-
 import MailIcon from 'assets/images/Mail.png';
 
+import { basicColorSet } from '@/consts/colors';
+import { Spacer } from '@/components/common/layout/Spacer';
+import { SignUp } from '@/domain/entities/signUp';
+import { SignUpModal } from './modules/SignUpModal';
+import { HandleChangeSignUp } from './hooks/useSignUp';
+
 type Props = {
-  handleSignUp: () => Promise<void>;
+  signUp: SignUp;
+  handleChangeSignUp: HandleChangeSignUp;
+  handleSubmit: () => Promise<void>;
   openModal: () => void;
   closeModal: () => void;
   renderModal: (
     children: React.ReactChildren | React.ReactChild
   ) => React.ReactNode;
 };
-const SignUpLayout = ({ openModal, renderModal }: Props) => {
+const SignUpLayout = ({
+  openModal,
+  renderModal,
+  signUp,
+  handleChangeSignUp,
+  handleSubmit,
+}: Props) => {
   return (
     <div className={containerStyle}>
       <h1 className={titleStyle}>horoscopes</h1>
@@ -24,7 +34,13 @@ const SignUpLayout = ({ openModal, renderModal }: Props) => {
         <Spacer axis="horizontal" size={16} />
         <span>メールアドレスではじめる</span>
       </button>
-      {renderModal(<SignUpModal />)}
+      {renderModal(
+        <SignUpModal
+          signUp={signUp}
+          handleChangeSignUp={handleChangeSignUp}
+          handleSubmit={handleSubmit}
+        />
+      )}
     </div>
   );
 };
@@ -53,8 +69,8 @@ const buttonStyle = css`
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  border-radius: 4px;
-  box-shadow: 0 2px 2px ${basicColorSet.shadowPrimary};
+  border-radius: 16px;
+  box-shadow: 0 2px 5px -2px ${basicColorSet.shadowPrimary};
   cursor: pointer;
 
   &:hover {

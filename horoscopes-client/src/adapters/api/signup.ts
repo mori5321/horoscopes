@@ -1,3 +1,4 @@
+import {SignUp} from '@/domain/entities/signUp';
 import { API } from './api';
 
 type ReqBody = {
@@ -5,6 +6,16 @@ type ReqBody = {
     email: string,
     password: string,
     password_confirmation: string,
+  }
+}
+
+const reqBodyFromEntity = (signUp: SignUp): ReqBody => {
+  return {
+    signup: {
+      email: signUp.email,
+      password: signUp.password,
+      password_confirmation: signUp.password
+    }
   }
 }
 
@@ -28,4 +39,4 @@ const call = async (reqBody: ReqBody): Promise<Response | ErrorResponse> => {
   return body;
 };
 
-export { call, ReqBody }
+export { call, reqBodyFromEntity }
